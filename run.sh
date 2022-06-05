@@ -21,8 +21,7 @@ until [ "${CHOICE^}" != "" ]; do
     do 
         echo "$key : ${DEMOS[$key]}" 
     done 
-    read -n1 -p "Choose Demo (q to quit): "  SELECT
-    echo $SELECT
+    read -n1 -p "Choose Demo (q to quit): "  SELECT 
     if [ "$SELECT" = "q" ]; then 
         echo "Exiting..."
         exit
