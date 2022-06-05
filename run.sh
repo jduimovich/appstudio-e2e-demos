@@ -14,7 +14,7 @@ readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
 CHOICE=
 until [ "${CHOICE^}" != "" ]; do
     echo -n 
-    #clear
+    clear
     cat banner
     echo "--------------------------------"
     for key in ${!sorted[@]} 
