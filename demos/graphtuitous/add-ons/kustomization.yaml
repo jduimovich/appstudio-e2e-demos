@@ -1,0 +1,5 @@
+bases:
+- fibs-service/service.yaml
+- ha-proxy/route.yaml  
+- ha-proxy/service.yaml
+- frontend/service.yaml

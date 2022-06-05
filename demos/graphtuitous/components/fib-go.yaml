@@ -1,0 +1,14 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: fib-go
+spec:
+  componentName: fib-go
+  application: graphtuitous
+  source:
+    git:
+      url: https://github.com/jduimovich/graphtuitous
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e/main/devfiles/fib-go/devfile.yaml
+  build:
+    containerImage: quay.io/jduimovich0/fib-go
+  
