@@ -5,6 +5,7 @@ metadata:
 spec:
   componentName: haproxy
   application: graphtuitous
+  containerImage: quay.io/jduimovich0/haproxy
   source:
     git:
       url: https://github.com/jduimovich/graphtuitous

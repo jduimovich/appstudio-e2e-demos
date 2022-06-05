@@ -5,6 +5,7 @@ metadata:
 spec:
   componentName: fib-go
   application: graphtuitous
+  containerImage: quay.io/jduimovich0/fib-go
   source:
     git:
       url: https://github.com/jduimovich/graphtuitous
