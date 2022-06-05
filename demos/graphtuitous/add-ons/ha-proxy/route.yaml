@@ -1,7 +1,7 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: fe 
+  name: graphtuitous 
   labels:
     app: haproxy-service
 spec: 
