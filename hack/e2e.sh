@@ -43,7 +43,7 @@ echo "Application $APPNAME created"
 echo -n "Waiting for Application  Status True: "
 while :
 do
-    STATUS=$(kubectl get Application  graphtuitous -o yaml | yq '.status.conditions[].status')
+    STATUS=$(kubectl get Application  $APPNAME -o yaml | yq '.status.conditions[].status')
     if [ "$STATUS" == "True" ]
     then 
         break
