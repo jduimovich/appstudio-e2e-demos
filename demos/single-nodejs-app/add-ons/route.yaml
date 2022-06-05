@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: single-nodejs-app 
+  labels:
+    app: single-nodejs-app-service
+spec: 
+  port:
+    targetPort: 8080
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: single-nodejs-app-service
+    weight: 100
