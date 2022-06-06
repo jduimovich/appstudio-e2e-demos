@@ -1,0 +1,5 @@
+bases: 
+- billing-service/route.yaml  
+- billing-service/service.yaml  
+- map-service/route.yaml  
+- map-service/service.yaml   
