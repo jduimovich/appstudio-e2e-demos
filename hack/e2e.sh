@@ -20,15 +20,32 @@ fi
  
 APPNAME=$(basename $DEMODIR) 
 NS=$APPNAME
-echo "AppName = $APPNAME"
-echo "NS = $NS" 
-$SCRIPTDIR/create-ns.sh $NS
+echo "Installing AppName: $APPNAME"
+echo "Namespace: $NS" 
 
-echo "Install Secret for Quay.io" 
-oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
-  --docker-server="https://quay.io" \
-  --docker-username=$MY_QUAY_USER \
-  --docker-password=$MY_QUAY_TOKEN 
+kubectl get ns $NS &> /dev/null
+ERR=$? 
+if [  "$ERR" == "0" ]
+then
+  echo "Namespace $NS already exists"
+else
+$SCRIPTDIR/create-ns.sh $NS
+fi
+
+
+kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
+ERR=$? 
+if [  "$ERR" == "0" ]
+then
+  echo "Secret docker-registry redhat-appstudio-registry-pull-secret already exists"
+else
+  echo "Install Secret for Quay.io" 
+  oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
+    --docker-server="https://quay.io" \
+    --docker-username=$MY_QUAY_USER \
+    --docker-password=$MY_QUAY_TOKEN 
+fi
+
 if [ -d "$DEMODIR/app" ] 
 then
   echo "App Definition Found, use $DEMODIR/app." 

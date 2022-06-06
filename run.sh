@@ -11,13 +11,23 @@ done
 echo "$COUNTER demos found."  
 readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
  
-SHOWSTATUS=
+SHOWSTATUS=no
+TRIGGER_BUILDS=no
 CHOICE=
 until [ "${CHOICE^}" != "" ]; do
     echo -n 
     clear
     cat banner
    
+    if [ "$TRIGGER_BUILDS" = "yes" ]; then
+        TRIGGER_BUILDS=no 
+        for key in ${!sorted[@]} 
+        do
+            oc project ${DEMOS[$key]}
+            ./hack/build-all.sh
+            #read -n1 -p "Press any key to continue ..."  WAIT
+        done
+    fi
     if [ "$SHOWSTATUS" = "yes" ]; then
         SHOWSTATUS=no
         echo "--------------------------------"
@@ -34,13 +44,13 @@ until [ "${CHOICE^}" != "" ]; do
                      yq '.metadata.attributes' |
                      grep gitOpsRepository.url   
                 oc get routes -n ${DEMOS[$key]}  -o yaml  2>/dev/null | 
-                    yq '.items[].spec.host'  | 
+                    yq '.items[].spec.host | select(. != "el*")' |  
                     xargs -n 1 printf " Route: https://%s\n"
                 printf " "
             else 
                 printf "\n${DEMOS[$key]} not running\n"
             fi 
-        done 
+        done  
     fi 
     echo "--------------------------------"
     for key in ${!sorted[@]} 
@@ -56,12 +66,16 @@ until [ "${CHOICE^}" != "" ]; do
     if [ "$SELECT" = "s" ]; then
         SHOWSTATUS=yes 
     fi
+    if [ "$SELECT" = "t" ]; then
+        TRIGGER_BUILDS=yes 
+    fi
     SELECT=${SELECT^} 
     CHOICE=${DEMOS[$SELECT]}
     if [ -n "$CHOICE" ]; then
         echo; echo "Demo chosen is $CHOICE"
         ./hack/e2e.sh demos/$CHOICE
         CHOICE=""
+        read -n1 -p "Press any key to continue ..."  WAIT
     else      
         clear
         cat banner
