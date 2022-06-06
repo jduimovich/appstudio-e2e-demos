@@ -56,8 +56,9 @@ until [ "${CHOICE^}" != "" ]; do
     for key in ${!sorted[@]} 
     do  
         printf "%3s: %-20s \n"  $key  ${DEMOS[$key]}
-    done 
-    read -n1 -p "Choose Demo (q to quit, s for status): "  SELECT 
+    done
+    echo "Commands available: (q to quit, s for status, t to build all via triggers)"
+    read -n1 -p "Choose Demo or Command: "  SELECT 
     if [ "$SELECT" = "q" ]; then 
         echo 
         echo "Exiting..."
