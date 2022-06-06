@@ -4,7 +4,7 @@ metadata:
   name: map-service 
 spec:
   port:
-    targetPort: 8081
+    targetPort: 8080
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
