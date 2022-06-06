@@ -22,15 +22,18 @@ until [ "${CHOICE^}" != "" ]; do
         SHOWSTATUS=no
         echo "--------------------------------"
         echo "STATUS "
-        kubectl get Application ${DEMOS[$key]} -n ${DEMOS[$key]} &> /dev/null
-        ERR=$? 
-        if [  "$ERR" == "0" ]
-        then
-            RT=$(oc get routes ${DEMOS[$key]} -n ${DEMOS[$key]}  -o yaml  2>/dev/null | yq '.spec.host')
-            printf " (Installed)  Running at https://$RT\n" 
-        else 
-            printf "${DEMOS[$key]} not running\n"
-        fi 
+        for key in ${!sorted[@]} 
+        do  
+            kubectl get Application ${DEMOS[$key]} -n ${DEMOS[$key]} &> /dev/null
+            ERR=$? 
+            if [  "$ERR" == "0" ]
+            then
+                RT=$(oc get routes ${DEMOS[$key]} -n ${DEMOS[$key]}  -o yaml  2>/dev/null | yq '.spec.host')
+                printf " (Installed)  Running at https://$RT\n" 
+            else 
+                printf "${DEMOS[$key]} not running\n"
+            fi 
+        done 
     fi 
      echo "--------------------------------"
     for key in ${!sorted[@]} 

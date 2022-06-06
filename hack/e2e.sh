@@ -29,9 +29,15 @@ oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
   --docker-server="https://quay.io" \
   --docker-username=$MY_QUAY_USER \
   --docker-password=$MY_QUAY_TOKEN 
-
-
+if [ -d "$DEMODIR/app" ] 
+then
+  echo "App Definition Found, use $DEMODIR/app." 
+  oc apply -f $DEMODIR/app  
+else
+# use the directory to create an app
 $SCRIPTDIR/create-app.sh $APPNAME 
+fi
+
  
 echo
 echo -n "Waiting for Application: "

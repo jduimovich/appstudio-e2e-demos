@@ -1,0 +1,14 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: devfile-sample-go-basic
+spec:
+  componentName: devfile-sample-go-basic
+  application: nyc-transit
+  containerImage: quay.io/jduimovich0/devfile-sample-go-basic
+  source:
+    git:
+      url: https://github.com/devfile-samples/devfile-sample-go-basic 
+  build:
+    containerImage: quay.io/jduimovich0/devfile-sample-go-basic
+  

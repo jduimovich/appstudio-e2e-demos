@@ -6,7 +6,7 @@ then
       echo Missing APPNAME Param
       exit -1 
 fi  
-echo "Create Application: $APPNAME." 
+echo "Create Application from Template: $APPNAME." 
 format=$(<$SCRIPTDIR/templates/application.yaml)
 printf "$format\n" $APPNAME $APPNAME $APPNAME |  oc apply -f -   
   
