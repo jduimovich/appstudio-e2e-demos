@@ -35,7 +35,7 @@ until [ "${CHOICE^}" != "" ]; do
                      yq '.metadata.attributes' |
                      grep gitOpsRepository.url  
             else 
-                printf "${DEMOS[$key]} not running\n"
+                printf "\n${DEMOS[$key]} not running\n"
             fi 
         done 
     fi 
