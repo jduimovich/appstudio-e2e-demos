@@ -75,6 +75,7 @@ do
     sleep 1
 done 
 
+echo
 echo "Install Components. "  
 oc apply -f $DEMODIR/components  
 
