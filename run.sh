@@ -28,18 +28,21 @@ until [ "${CHOICE^}" != "" ]; do
             ERR=$? 
             if [  "$ERR" == "0" ]
             then
-                RT=$(oc get routes ${DEMOS[$key]} -n ${DEMOS[$key]}  -o yaml  2>/dev/null | yq '.spec.host')
-                printf "\n${DEMOS[$key]} Installed at https://$RT\n" 
+                printf "\n${DEMOS[$key]}\n " 
                 oc get application ${DEMOS[$key]}  -n ${DEMOS[$key]} -o yaml | \
                      yq '.status.devfile' | \
                      yq '.metadata.attributes' |
-                     grep gitOpsRepository.url  
+                     grep gitOpsRepository.url   
+                oc get routes -n ${DEMOS[$key]}  -o yaml  2>/dev/null | 
+                    yq '.items[].spec.host'  | 
+                    xargs -n 1 printf " Route: https://%s\n"
+                printf " "
             else 
                 printf "\n${DEMOS[$key]} not running\n"
             fi 
         done 
     fi 
-     echo "--------------------------------"
+    echo "--------------------------------"
     for key in ${!sorted[@]} 
     do  
         printf "%3s: %-20s \n"  $key  ${DEMOS[$key]}
