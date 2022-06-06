@@ -29,7 +29,11 @@ until [ "${CHOICE^}" != "" ]; do
             if [  "$ERR" == "0" ]
             then
                 RT=$(oc get routes ${DEMOS[$key]} -n ${DEMOS[$key]}  -o yaml  2>/dev/null | yq '.spec.host')
-                printf " (Installed)  Running at https://$RT\n" 
+                printf "\n${DEMOS[$key]} Installed at https://$RT\n" 
+                oc get application ${DEMOS[$key]}  -n ${DEMOS[$key]} -o yaml | \
+                     yq '.status.devfile' | \
+                     yq '.metadata.attributes' |
+                     grep gitOpsRepository.url  
             else 
                 printf "${DEMOS[$key]} not running\n"
             fi 

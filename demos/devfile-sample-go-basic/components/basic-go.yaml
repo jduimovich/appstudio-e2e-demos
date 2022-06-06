@@ -4,7 +4,7 @@ metadata:
   name: devfile-sample-go-basic
 spec:
   componentName: devfile-sample-go-basic
-  application: nyc-transit
+  application: devfile-sample-go-basic
   containerImage: quay.io/jduimovich0/devfile-sample-go-basic
   source:
     git:

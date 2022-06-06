@@ -1,9 +1,9 @@
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Component
 metadata:
-  name: dc-metro-map
+  name: map-service
 spec:
-  componentName: dc-metro-map
+  componentName: map-service
   application: nyc-transit
   containerImage: quay.io/jduimovich0/dc-metro-map
   source:
