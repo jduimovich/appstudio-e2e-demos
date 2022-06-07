@@ -1,7 +1,7 @@
 # appstudio-e2e-demos
 
-This repo contains a selection of App Studio Demos
-The Demos consist of the Application and Components needed to bootstrap a demo as well as an "add-on" which adds content which is missing from app-studio generated gitops repos.
+This repo contains a selection of App Studio Demos. 
+The Demos consist of the Application and Components needed to bootstrap a demo as well as an "add-on" which adds content which may be missing from app-studio generated gitops repos. As these are fixed in app studio, the add-ons will be removed. 
 
 Run `./run.sh` to try it on a app studio cluster ...
 
@@ -19,37 +19,27 @@ Run `./run.sh` to try it on a app studio cluster ...
 Demos can be added in the subdirectory called demos in a structure like the following.
 
 ```
-/home/john/dev/appstudio-e2e-demos$ tree demos/graphtuitous/
-demos/graphtuitous/
+tree demos/nyc-transit/
+demos/nyc-transit/
 ├── add-ons
-│   ├── fibs-service
-│   │   └── service.yaml
-│   ├── frontend
-│   │   └── service.yaml
-│   ├── ha-proxy
+│   ├── billing-service
 │   │   ├── route.yaml
 │   │   └── service.yaml
-│   └── kustomization.yaml
-├── components
-│   ├── fib-go.yaml
-│   ├── fib-node.yaml
-│   ├── frontend.yaml
-│   └── haproxy.yaml
-└── devfiles
-    ├── fib-go
-    │   └── devfile.yaml
-    ├── fib-node
-    │   └── devfile.yaml
-    ├── frontend
-    │   └── devfile.yaml
-    └── haproxy
-        └── devfile.yaml
+│   ├── kustomization.yaml
+│   └── map-service
+│       ├── route.yaml
+│       └── service.yaml
+├── app
+│   └── application.yaml
+└── components
+    ├── billing-service.yaml
+    └── map-service.yaml
 ```    
 
-`app` --- app studio application definition (OPTIONAL- if missing, one will be created from the directory name, easy peasy)
+`app` --- app studio application definition (optional- if missing, one will be created from the directory name, easy peasy)
 
-`devfiles` --- externally provided devfiles if original repo doesn't have one
+`devfiles` --- externally provided devfiles if original repo doesn't have one (optional)
 
 `components` --- component definitions 
 
-`add-ons` --- extra yaml needed for the app.
+`add-ons` --- extra yaml needed for the app.  (optional)
