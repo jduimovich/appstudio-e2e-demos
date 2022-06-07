@@ -77,7 +77,15 @@ done
 
 echo
 echo "Install Components. "  
-oc apply -f $DEMODIR/components  
+for component in $DEMODIR/components/*
+do
+   IMG=$(yq '.spec.containerImage' $component)
+   B=$(basename $IMG) 
+   echo "Setting Component Image using MY_QUAY_USER to quay.io/$MY_QUAY_USER/$B"
+   yq '.spec.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component |
+    yq '.spec.build.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component |
+      oc apply -f -
+done
 
 if [ -d "$DEMODIR/add-ons" ] 
 then
