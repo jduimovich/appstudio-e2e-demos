@@ -49,24 +49,23 @@ fi
 if [ -d "$DEMODIR/app" ] 
 then
   echo "App Definition Found, use $DEMODIR/app." 
-  oc apply -f $DEMODIR/app  
+  oc apply -n $NS -f $DEMODIR/app  
 else
 # use the directory to create an app
-$SCRIPTDIR/create-app.sh $APPNAME 
+$SCRIPTDIR/create-app.sh $APPNAME $NS
 fi
-
  
 echo
 echo -n "Waiting for Application: "
 while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do
-  echo -n .
+  echo -n . 
   sleep 1
 done
 echo "Application $APPNAME created" 
 echo -n "Waiting for Application  Status True: "
 while :
 do
-    STATUS=$(kubectl get Application  $APPNAME -o yaml | yq '.status.conditions[].status')
+    STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[].status')
     if [ "$STATUS" == "True" ]
     then 
         break
@@ -103,4 +102,4 @@ else
     echo "No Add-ons found for $APPNAME."
 fi
  
-oc get Application $APPNAME -o yaml 
+oc get Application $APPNAME -n $NS -o yaml 

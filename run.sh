@@ -22,9 +22,8 @@ until [ "${CHOICE^}" != "" ]; do
     if [ "$TRIGGER_BUILDS" = "yes" ]; then
         TRIGGER_BUILDS=no 
         for key in ${!sorted[@]} 
-        do
-            oc project ${DEMOS[$key]}
-            ./hack/build-all.sh
+        do 
+            ./hack/build-all.sh ${DEMOS[$key]}
             #read -n1 -p "Press any key to continue ..."  WAIT
         done
     fi
@@ -33,7 +32,7 @@ until [ "${CHOICE^}" != "" ]; do
         echo "--------------------------------"
         echo "STATUS "
         for key in ${!sorted[@]} 
-        do  
+        do   
             kubectl get Application ${DEMOS[$key]} -n ${DEMOS[$key]} &> /dev/null
             ERR=$? 
             if [  "$ERR" == "0" ]
