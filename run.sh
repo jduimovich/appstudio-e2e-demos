@@ -10,14 +10,15 @@ do
 done
 echo "$COUNTER demos found."  
 readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
- 
+
+BANNER=banner
 SHOWSTATUS=no
 TRIGGER_BUILDS=no
 CHOICE=
 until [ "${CHOICE^}" != "" ]; do
     echo -n 
     clear
-    cat banner
+    cat $BANNER
    
     if [ "$TRIGGER_BUILDS" = "yes" ]; then
         TRIGGER_BUILDS=no 
@@ -37,14 +38,22 @@ until [ "${CHOICE^}" != "" ]; do
             ERR=$? 
             if [  "$ERR" == "0" ]
             then
-                printf "\n${DEMOS[$key]}\n " 
-                oc get application ${DEMOS[$key]}  -n ${DEMOS[$key]} -o yaml | \
+                printf "\nApplication: ${DEMOS[$key]}\n" 
+                for c in demos/${DEMOS[$key]}/components/*
+                do 
+                   NM=$(yq '.metadata.name' $c)
+                   REPO=$(yq '.spec.source.git.url' $c)
+                   printf "\tComponent: %s @ %s\n" $NM $REPO
+                done
+                GOPS=$(oc get application ${DEMOS[$key]}  -n ${DEMOS[$key]} -o yaml | \
                      yq '.status.devfile' | \
                      yq '.metadata.attributes' |
-                     grep gitOpsRepository.url   
+                     grep gitOpsRepository.url | 
+                     cut -d ' ' -f 2)   
+                printf "\tGitops Repo: %s\n" "$GOPS"
                 oc get routes -n ${DEMOS[$key]}  -o yaml  2>/dev/null | 
                     yq '.items[].spec.host | select(. != "el*")' |  
-                    xargs -n 1 printf " Route: https://%s\n"
+                    xargs -n 1 printf "\tRoute: https://%s\n"
                 printf " "
             else 
                 printf "\n${DEMOS[$key]} not running\n"
@@ -58,6 +67,9 @@ until [ "${CHOICE^}" != "" ]; do
     done
     echo "Commands available: (q to quit, s for status, t to build all via triggers)"
     read -n1 -p "Choose Demo or Command: "  SELECT 
+    if [ "$SELECT" = "d" ]; then 
+        BANNER=alpo-studio
+    fi 
     if [ "$SELECT" = "q" ]; then 
         echo 
         echo "Exiting..."
