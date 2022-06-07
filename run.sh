@@ -67,8 +67,12 @@ until [ "${CHOICE^}" != "" ]; do
     done
     echo "Commands available: (q to quit, s for status, t to build all via triggers)"
     read -n1 -p "Choose Demo or Command: "  SELECT 
-    if [ "$SELECT" = "d" ]; then 
-        BANNER=alpo-studio
+    if [ "$SELECT" = "d"   ]; then 
+        if [ "$BANNER" = "banner"   ]; then 
+            BANNER=alpo-studio
+        else 
+            BANNER=banner
+        fi
     fi 
     if [ "$SELECT" = "q" ]; then 
         echo 
