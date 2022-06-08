@@ -4,6 +4,7 @@ This repo contains a selection of App Studio Demos.
 The Demos consist of the Application and Components needed to bootstrap a demo as well as an "add-on" which adds content which may be missing from app-studio generated gitops repos. As these are fixed in app studio, the add-ons will be removed. 
 
 Run `./run.sh` to try it on a app studio cluster ...
+Note: As per the infra-deployments examples, you need to set `MY_QUAY_USER` and `MY_QUAY_TOKEN` to enable push images to your registry.
 
 <img width="953" alt="image" src="https://user-images.githubusercontent.com/7844190/172205712-983f2b33-ec77-453e-bf5b-b0c773f09469.png">
 
