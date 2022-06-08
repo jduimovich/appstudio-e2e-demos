@@ -65,7 +65,8 @@ until [ "${CHOICE^}" != "" ]; do
     do  
         printf "%3s: %-20s \n"  $key  ${DEMOS[$key]}
     done
-    echo "Commands available: (q to quit, s for status, t to build all via triggers)"
+    printf "Commands available: \n(q to quit, s for status, t trigger all webhooks)\n"
+    printf "(a install-all, d suprise)\n"
     read -n1 -p "Choose Demo or Command: "  SELECT 
     if [ "$SELECT" = "d"   ]; then 
         if [ "$BANNER" = "banner"   ]; then 
@@ -84,6 +85,13 @@ until [ "${CHOICE^}" != "" ]; do
     fi
     if [ "$SELECT" = "t" ]; then
         TRIGGER_BUILDS=yes 
+    fi
+    if [ "$SELECT" = "a" ]; then 
+        echo; echo "Run All"
+        for run in ${!sorted[@]} 
+        do   
+            ./hack/e2e.sh demos/${DEMOS[$run]}
+        done 
     fi
     SELECT=${SELECT^} 
     CHOICE=${DEMOS[$SELECT]}

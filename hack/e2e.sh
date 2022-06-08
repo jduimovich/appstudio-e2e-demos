@@ -76,13 +76,16 @@ done
 
 echo
 echo "Install Components. "  
+
+mkdir -p $SCRIPTDIR/logs/$NS
 for component in $DEMODIR/components/*
 do
    IMG=$(yq '.spec.containerImage' $component)
    B=$(basename $IMG) 
    echo "Setting Component Image using MY_QUAY_USER to quay.io/$MY_QUAY_USER/$B"
-   yq '.spec.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component |
-    yq '.spec.build.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component |
+   yq '.spec.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component | \
+    yq '.spec.build.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component | \
+      tee $SCRIPTDIR/logs/$NS/$B.yaml | \
       oc apply -f -
 done
 

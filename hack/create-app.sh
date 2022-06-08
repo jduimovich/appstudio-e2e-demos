@@ -9,5 +9,8 @@ then
 fi  
 echo "Create Application from Template: $APPNAME" 
 format=$(<$SCRIPTDIR/templates/application.yaml)
-printf "$format\n" $APPNAME $APPNAME $APPNAME |  oc apply -n $NS -f -   
+mkdir -p $SCRIPTDIR/logs/$NS
+printf "$format\n" $APPNAME $APPNAME $APPNAME | \
+       tee $SCRIPTDIR/logs/$NS/app.yaml | \
+       oc apply -n $NS -f -   
   
