@@ -11,6 +11,8 @@ done
 echo "$COUNTER demos found."  
 readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
 
+
+BUNDLE=$(oc get configmap build-pipelines-defaults -o yaml | yq '.data')   
 BANNER=banner
 SHOWSTATUS=no
 TRIGGER_BUILDS=no
@@ -66,7 +68,8 @@ until [ "${CHOICE^}" != "" ]; do
         printf "%3s: %-20s \n"  $key  ${DEMOS[$key]}
     done
     printf "Commands available: \n(q to quit, s for status, t trigger all webhooks)\n"
-    printf "(a install-all, d suprise)\n"
+    printf "(a install-all, d suprise, h (hacbs bundle, do this first!))\n"
+    printf  "%s\n" "$BUNDLE"
     read -n1 -p "Choose Demo or Command: "  SELECT 
     if [ "$SELECT" = "d"   ]; then 
         if [ "$BANNER" = "banner"   ]; then 
@@ -92,6 +95,16 @@ until [ "${CHOICE^}" != "" ]; do
         do   
             ./hack/e2e.sh demos/${DEMOS[$run]}
         done 
+    fi
+    if [ "$SELECT" = "h" ]; then 
+        echo; echo "Use the HACBS Repos"
+        oc create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
+        oc apply -f-
+        BUNDLE=$(oc get configmap build-pipelines-defaults -o yaml | yq '.data')
+        echo "BUNDLE has been updated to HACBS"        
+        echo "Note this will only apply to new applications/components."
+        echo "existing generated gitops repos will use the bundle from their create time."
+        read -n1 -p "Press any key to continue ..."  WAIT
     fi
     SELECT=${SELECT^} 
     CHOICE=${DEMOS[$SELECT]}
