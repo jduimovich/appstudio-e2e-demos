@@ -1,0 +1,14 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: managed-gitops
+spec:
+  componentName: managed-gitops
+  application: alpo-studio
+  containerImage: quay.io/jduimovich0/managed-gitops
+  source:
+    git:
+      url: https://github.com/redhat-appstudio/managed-gitops
+  build:
+    containerImage: quay.io/jduimovich0/managed-gitops
+  

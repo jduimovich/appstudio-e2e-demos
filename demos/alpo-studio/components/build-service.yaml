@@ -1,0 +1,14 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: build-service
+spec:
+  componentName: build-service
+  application: alpo-studio
+  containerImage: quay.io/jduimovich0/build-service
+  source:
+    git:
+      url: https://github.com/redhat-appstudio/build-service
+  build:
+    containerImage: quay.io/jduimovich0/build-service
+  
