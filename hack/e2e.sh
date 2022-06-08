@@ -2,6 +2,7 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 DEMODIR=$1 
+BUNDLE=$2
 if [ -z "$DEMODIR" ]
 then
       echo Missing parameter Demo Directory 
@@ -17,7 +18,12 @@ then
       echo Missing env MY_QUAY_USER 
       exit -1 
 fi
- 
+if [ -z "$BUNDLE" ]
+then
+      BUNDLE=default 
+fi 
+
+
 APPNAME=$(basename $DEMODIR) 
 NS=$APPNAME
 echo "Installing AppName: $APPNAME"
@@ -32,6 +38,12 @@ else
 $SCRIPTDIR/create-ns.sh $NS
 fi
 
+if [ "$BUNDLE" = "hacbs" ]; then 
+  echo
+  echo "Use the HACBS Repos in $NS"
+  oc create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
+    oc apply -f -
+fi
 
 kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
 ERR=$? 

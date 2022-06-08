@@ -12,7 +12,7 @@ echo "$COUNTER demos found."
 readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
 
 
-BUNDLE=$(oc get configmap build-pipelines-defaults -o yaml | yq '.data')   
+BUNDLE=default   
 BANNER=banner
 SHOWSTATUS=no
 TRIGGER_BUILDS=no
@@ -52,11 +52,17 @@ until [ "${CHOICE^}" != "" ]; do
                      yq '.metadata.attributes' |
                      grep gitOpsRepository.url | 
                      cut -d ' ' -f 2)   
+                CONF=$(oc get configmap build-pipelines-defaults -n ${DEMOS[$key]} -o yaml 2>/dev/null | yq '.data') 
+                if [ "$CONF" = "null" ]; then
+                    CONF=default 
+                fi
+                printf "\tPipelines Bundle: $CONF\n"
                 printf "\tGitops Repo: %s\n" "$GOPS"
                 oc get routes -n ${DEMOS[$key]}  -o yaml  2>/dev/null | 
                     yq '.items[].spec.host | select(. != "el*")' |  
                     xargs -n 1 printf "\tRoute: https://%s\n"
                 printf " "
+
             else 
                 printf "\n${DEMOS[$key]} not running\n"
             fi 
@@ -68,10 +74,10 @@ until [ "${CHOICE^}" != "" ]; do
         printf "%3s: %-20s \n"  $key  ${DEMOS[$key]}
     done
     printf "Commands available: \n(q to quit, s for status, t trigger all webhooks)\n"
-    printf "(a install-all, d suprise, h (hacbs bundle, do this first!))\n"
-    printf  "%s\n" "$BUNDLE"
+    printf "(a install-all, b toggle-banner, h (hacbs bundle), d (default bundle) )\n"
+    printf  "%s\n" "Build Pipelines: $BUNDLE"
     read -n1 -p "Choose Demo or Command: "  SELECT 
-    if [ "$SELECT" = "d"   ]; then 
+    if [ "$SELECT" = "b"   ]; then 
         if [ "$BANNER" = "banner"   ]; then 
             BANNER=alpo-studio
         else 
@@ -93,24 +99,22 @@ until [ "${CHOICE^}" != "" ]; do
         echo; echo "Run All"
         for run in ${!sorted[@]} 
         do   
-            ./hack/e2e.sh demos/${DEMOS[$run]}
+            ./hack/e2e.sh demos/${DEMOS[$run] $BUNDLE}
         done 
     fi
     if [ "$SELECT" = "h" ]; then 
-        echo; echo "Use the HACBS Repos"
-        oc create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
-        oc apply -f-
-        BUNDLE=$(oc get configmap build-pipelines-defaults -o yaml | yq '.data')
-        echo "BUNDLE has been updated to HACBS"        
-        echo "Note this will only apply to new applications/components."
-        echo "existing generated gitops repos will use the bundle from their create time."
-        read -n1 -p "Press any key to continue ..."  WAIT
+        echo; echo "Configure all new projects to use the HACBS Repos"
+        BUNDLE=hacbs
+    fi
+  if [ "$SELECT" = "d" ]; then 
+        echo; echo "Configure all new projects to use the default bundle"
+        BUNDLE=default       
     fi
     SELECT=${SELECT^} 
     CHOICE=${DEMOS[$SELECT]}
     if [ -n "$CHOICE" ]; then
         echo; echo "Demo chosen is $CHOICE"
-        ./hack/e2e.sh demos/$CHOICE
+        ./hack/e2e.sh demos/$CHOICE $BUNDLE 
         CHOICE=""
         read -n1 -p "Press any key to continue ..."  WAIT
     else      
