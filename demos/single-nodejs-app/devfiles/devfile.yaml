@@ -3,6 +3,8 @@ metadata:
   name: single-nodejs-app
   projectType: container
   language: container
+  attributes:
+    alpha.dockerimage-port: 8080
   version: 1.0.0
   provider: Red Hat  
 components:
