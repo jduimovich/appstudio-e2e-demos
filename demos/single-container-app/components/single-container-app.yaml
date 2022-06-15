@@ -6,6 +6,7 @@ spec:
   componentName: single-container-app
   application: single-container-app
   containerImage: quay.io/jduimovich0/single-container-app
+  targetPort: 8080
   source:
     git:
       url: https://github.com/jduimovich/single-container-app
