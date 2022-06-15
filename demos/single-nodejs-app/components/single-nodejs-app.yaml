@@ -6,6 +6,8 @@ spec:
   componentName: single-nodejs-app
   application: single-nodejs-app
   containerImage: quay.io/jduimovich0/single-nodejs-app
+  route: click
+  targetPort: 8080
   source:
     git:
       url: https://github.com/jduimovich/single-nodejs-app
