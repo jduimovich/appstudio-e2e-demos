@@ -61,7 +61,8 @@ fi
 if [ -d "$DEMODIR/app" ] 
 then
   echo "App Definition Found, use $DEMODIR/app." 
-  oc apply -n $NS -f $DEMODIR/app  
+  oc apply -n $NS -f $DEMODIR/app
+  cp $DEMODIR/app/*  $SCRIPTDIR/logs/$NS 
 else
 # use the directory to create an app
 $SCRIPTDIR/create-app.sh $APPNAME $NS
