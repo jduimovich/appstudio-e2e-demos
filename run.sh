@@ -99,7 +99,7 @@ until [ "${CHOICE^}" != "" ]; do
         echo; echo "Run All"
         for run in ${!sorted[@]} 
         do   
-            ./hack/e2e.sh demos/${DEMOS[$run] $BUNDLE}
+            ./hack/e2e.sh demos/${DEMOS[$run]} $BUNDLE
         done 
     fi
     if [ "$SELECT" = "h" ]; then 
