@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/usr/bin/env bash
 declare -A DEMOS
 COUNTER=0
 for dir in demos/*
