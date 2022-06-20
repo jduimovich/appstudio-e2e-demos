@@ -4,7 +4,7 @@ metadata:
   name: fibs-service
 spec:
   selector:
-    app: fib-service       
+    app.kubernetes.io/instance: fib-go       
   ports:
   - port: 8080
     targetPort: 8080
