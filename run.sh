@@ -11,6 +11,16 @@ done
 echo "$COUNTER demos found."  
 readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
 
+WHICH_SERVER=$(oc whoami)
+APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
+if [ -n "$APP_STUDIO" ]
+then
+ MODE="Note, this demo running against an app-studio so will use the current namespace only."
+ APP_STUDIO_NS=$(oc project --short)
+else
+ MODE="This demo running outside app studio, will create a new namespace per project"
+ APP_STUDIO_NS="error"
+fi
 
 BUNDLE=default   
 BANNER=banner
@@ -21,12 +31,19 @@ until [ "${CHOICE^}" != "" ]; do
     echo -n 
     clear
     cat $BANNER
+    echo "$MODE" 
    
     if [ "$TRIGGER_BUILDS" = "yes" ]; then
         TRIGGER_BUILDS=no 
         for key in ${!sorted[@]} 
         do 
-            ./hack/build-all.sh ${DEMOS[$key]}
+        if [ -n "$APP_STUDIO" ]
+            then
+                NS=$APP_STUDIO_NS
+            else
+                NS=${DEMOS[$key]} 
+            fi 
+            ./hack/build-all.sh $NS
             #read -n1 -p "Press any key to continue ..."  WAIT
         done
     fi
@@ -35,8 +52,14 @@ until [ "${CHOICE^}" != "" ]; do
         echo "--------------------------------"
         echo "STATUS "
         for key in ${!sorted[@]} 
-        do   
-            kubectl get Application ${DEMOS[$key]} -n ${DEMOS[$key]} &> /dev/null
+        do  
+            if [ -n "$APP_STUDIO" ]
+            then
+                NS=$APP_STUDIO_NS
+            else
+                NS=${DEMOS[$key]} 
+            fi 
+            kubectl get Application ${DEMOS[$key]} -n $NS &> /dev/null
             ERR=$? 
             if [  "$ERR" == "0" ]
             then
@@ -47,18 +70,24 @@ until [ "${CHOICE^}" != "" ]; do
                    REPO=$(yq '.spec.source.git.url' $c)
                    printf "\tComponent: %s @ %s\n" $NM $REPO
                 done
-                GOPS=$(oc get application ${DEMOS[$key]}  -n ${DEMOS[$key]} -o yaml | \
+                if [ -n "$APP_STUDIO" ]
+                then
+                    NS=$APP_STUDIO_NS
+                else
+                    NS=${DEMOS[$key]} 
+                fi  
+                GOPS=$(oc get application ${DEMOS[$key]}  -n $NS -o yaml | \
                      yq '.status.devfile' | \
                      yq '.metadata.attributes' |
                      grep gitOpsRepository.url | 
                      cut -d ' ' -f 2)   
-                CONF=$(oc get configmap build-pipelines-defaults -n ${DEMOS[$key]} -o yaml 2>/dev/null | yq '.data') 
+                CONF=$(oc get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
                 if [ "$CONF" = "null" ]; then
                     CONF=default 
                 fi
                 printf "\tPipelines Bundle: $CONF\n"
                 printf "\tGitops Repo: %s\n" "$GOPS"
-                oc get routes -n ${DEMOS[$key]}  -o yaml  2>/dev/null | 
+                oc get routes -n $NS  -o yaml  2>/dev/null | 
                     yq '.items[].spec.host | select(. != "el*")' |  
                     xargs -n 1 printf "\tRoute: https://%s\n"
                 printf " "
