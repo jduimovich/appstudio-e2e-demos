@@ -6,6 +6,11 @@ spec:
   componentName: fib-go
   application: graphtuitous
   containerImage: quay.io/jduimovich0/fib-go
+  replicas: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 64Mi
   source:
     git:
       url: https://github.com/jduimovich/graphtuitous

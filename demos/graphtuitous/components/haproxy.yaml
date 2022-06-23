@@ -6,6 +6,11 @@ spec:
   componentName: haproxy
   application: graphtuitous
   containerImage: quay.io/jduimovich0/haproxy
+  replicas: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 128Mi
   source:
     git:
       url: https://github.com/jduimovich/graphtuitous

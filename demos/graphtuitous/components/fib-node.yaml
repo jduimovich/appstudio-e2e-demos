@@ -6,6 +6,11 @@ spec:
   componentName: fib-node
   application: graphtuitous 
   containerImage: quay.io/jduimovich0/fib-node
+  replicas: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 48Mi
   source:
     git:
       url: https://github.com/jduimovich/graphtuitous
