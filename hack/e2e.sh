@@ -38,7 +38,10 @@ else
         NS=$APPNAME
 fi 
 echo "Installing AppName: $APPNAME"
-echo "Namespace: $NS" 
+echo "Namespace: $NS"  
+LOG=$(basename $DEMODIR) 
+mkdir -p $SCRIPTDIR/logs/$LOG
+echo "Log: $SCRIPTDIR/logs/$LOG" 
 
 kubectl get ns $NS &> /dev/null
 ERR=$? 
@@ -77,8 +80,8 @@ fi
 if [ -d "$DEMODIR/app" ] 
 then
   echo "App Definition Found, use $DEMODIR/app." 
-  oc apply -n $NS -f $DEMODIR/app
-  cp $DEMODIR/app/*  $SCRIPTDIR/logs/$NS 
+  oc apply -n $NS -f $DEMODIR/app  
+  cp $DEMODIR/app/*  $SCRIPTDIR/logs/$LOG/ 
 else
 # use the directory to create an app
 $SCRIPTDIR/create-app.sh $APPNAME $NS
@@ -105,15 +108,26 @@ done
 echo
 echo "Install Components. "  
 
-mkdir -p $SCRIPTDIR/logs/$NS
+
 for component in $DEMODIR/components/*
 do
    IMG=$(yq '.spec.containerImage' $component)
-   B=$(basename $IMG) 
-   echo "Setting Component Image using MY_QUAY_USER to quay.io/$MY_QUAY_USER/$B"
-   yq '.spec.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component | \
-    yq '.spec.build.containerImage="quay.io/'$MY_QUAY_USER'/'$B'"' $component | \
-      tee $SCRIPTDIR/logs/$NS/$B.yaml | \
+   B=$(basename $IMG)
+# app studio format quay.io/redhat-appstudio/user-workload:NAMESPACE-COMPONENT 
+# cluster format quay.io/$MY_QUAY_USER/COMPONENT
+  if [ -n "$APP_STUDIO" ]
+  then 
+    QUAY_USER=redhat-appstudio
+    COMP=user-workload:$NS-$B 
+  else
+    QUAY_USER=$MY_QUAY_USER
+    COMP=$B 
+  fi 
+  FULL_IMAGE=quay.io/$QUAY_USER/$COMP
+  echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
+   yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
+    yq '.spec.build.containerImage="'$FULL_IMAGE'"' | \
+      tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
       oc apply -f -
 done
 
@@ -134,3 +148,8 @@ else
 fi
  
 oc get Application $APPNAME -n $NS -o yaml 
+echo 
+echo "Find the yaml used here: $SCRIPTDIR/logs/$LOG/"
+ls -al $SCRIPTDIR/logs/$LOG/
+echo "done"
+echo
