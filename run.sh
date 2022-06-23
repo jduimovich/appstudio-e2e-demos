@@ -18,9 +18,9 @@ function updateserverinfo() {
     if [ -n "$APP_STUDIO" ]
     then
         export APP_STUDIO_NS=$(oc project --short)
-        export MODE="\napp-studio mode will use the current namespace $APP_STUDIO_NS.\n"
+        export MODE="\napp-studio mode will a single namespace $APP_STUDIO_NS.\n"
     else
-        export MODE="\n direct cluster mode will will create a new namespace per project.\n"
+        export MODE="\nDirect cluster mode will create a new namespace per project.\n"
         export  APP_STUDIO_NS="error"
     fi
     export  CONTEXT=$(oc config current-context)
@@ -145,7 +145,7 @@ until [ "${CHOICE^}" != "" ]; do
         echo "This is your list, if appstudio is missing, go read the onboarding doc"
         kubectl config get-contexts  
         echo "running oc config  use-context  default/api-crc-testing:6443/kubeadmin"
-        oc config  use-context  "default/api-crc-testing:6443/kubeadmin"
+        oc config  use-context  "crc-admin"
         updateserverinfo
         read -n1 -p "press key to continue: "  WAIT
     fi 
