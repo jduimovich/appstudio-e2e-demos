@@ -7,6 +7,11 @@ spec:
   application: single-container-app
   containerImage: quay.io/jduimovich0/single-container-app
   targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
   source:
     git:
       url: https://github.com/jduimovich/single-container-app
