@@ -1,6 +1,6 @@
 schemaVersion: 2.2.0
 metadata:
-  name: single-nodejs-app
+  name: sna
   projectType: container
   language: container
   attributes:
@@ -10,7 +10,7 @@ metadata:
 components:
   - name: outerloop-build
     image:
-      imageName: user-workload:sna
+      imageName: sna
       dockerfile:
         uri: docker/Dockerfile
         buildContext: .
