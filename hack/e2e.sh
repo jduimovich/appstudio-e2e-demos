@@ -56,17 +56,22 @@ if [ "$BUNDLE" = "hacbs" ]; then
     oc apply -f -
 fi
 
-kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
-ERR=$? 
-if [  "$ERR" == "0" ]
+if [ -n "$APP_STUDIO" ]
 then
-  echo "Secret docker-registry redhat-appstudio-registry-pull-secret already exists"
+  echo "App Studio Mode does not install secrets"
 else
-  echo "Install Secret for Quay.io" 
-  oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
-    --docker-server="https://quay.io" \
-    --docker-username=$MY_QUAY_USER \
-    --docker-password=$MY_QUAY_TOKEN 
+  kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
+  ERR=$? 
+  if [  "$ERR" == "0" ]
+  then
+    echo "Secret docker-registry redhat-appstudio-registry-pull-secret already exists"
+  else
+    echo "Install Secret for Quay.io" 
+    oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
+      --docker-server="https://quay.io" \
+      --docker-username=$MY_QUAY_USER \
+      --docker-password=$MY_QUAY_TOKEN 
+  fi
 fi
 
 if [ -d "$DEMODIR/app" ] 
@@ -80,13 +85,12 @@ $SCRIPTDIR/create-app.sh $APPNAME $NS
 fi
  
 echo
-echo -n "Waiting for Application: "
+echo "Creating Application: $APPNAME"
 while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do
   echo -n . 
   sleep 1
-done
-echo "Application $APPNAME created" 
-echo -n "Waiting for Application  Status True: "
+done 
+echo "Waiting for Application: $APPNAME to be ready."
 while :
 do
     STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[].status')

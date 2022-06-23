@@ -11,16 +11,22 @@ done
 echo "$COUNTER demos found."  
 readarray -t sorted < <(for a in "${!DEMOS[@]}"; do echo "$a"; done | sort)
 
-WHICH_SERVER=$(oc whoami)
-APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
-if [ -n "$APP_STUDIO" ]
-then
- MODE="Note, this demo running against an app-studio so will use the current namespace only."
- APP_STUDIO_NS=$(oc project --short)
-else
- MODE="This demo running outside app studio, will create a new namespace per project"
- APP_STUDIO_NS="error"
-fi
+#
+function updateserverinfo() {
+    export WHICH_SERVER=$(oc whoami)
+    export APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
+    if [ -n "$APP_STUDIO" ]
+    then
+        export APP_STUDIO_NS=$(oc project --short)
+        export MODE="\napp-studio mode will use the current namespace $APP_STUDIO_NS.\n"
+    else
+        export MODE="\n direct cluster mode will will create a new namespace per project.\n"
+        export  APP_STUDIO_NS="error"
+    fi
+    export  CONTEXT=$(oc config current-context)
+}
+
+updateserverinfo 
 
 BUNDLE=default   
 BANNER=banner
@@ -31,21 +37,23 @@ until [ "${CHOICE^}" != "" ]; do
     echo -n 
     clear
     cat $BANNER
-    echo "$MODE" 
+    printf "$MODE" 
    
     if [ "$TRIGGER_BUILDS" = "yes" ]; then
         TRIGGER_BUILDS=no 
-        for key in ${!sorted[@]} 
-        do 
         if [ -n "$APP_STUDIO" ]
-            then
-                NS=$APP_STUDIO_NS
-            else
-                NS=${DEMOS[$key]} 
-            fi 
-            ./hack/build-all.sh $NS
-            #read -n1 -p "Press any key to continue ..."  WAIT
-        done
+        then 
+            # one namespace, so build all in that one only
+            ./hack/build-all.sh $APP_STUDIO_NS
+        else
+            # many namespaces, build all in each
+            for key in ${!sorted[@]} 
+            do   
+                ./hack/build-all.sh ${DEMOS[$key]} 
+                #read -n1 -p "Press any key to continue ..."  WAIT
+            done
+        fi 
+       
     fi
     if [ "$SHOWSTATUS" = "yes" ]; then
         SHOWSTATUS=no
@@ -104,7 +112,10 @@ until [ "${CHOICE^}" != "" ]; do
     done
     printf "Commands available: \n(q to quit, s for status, t trigger all webhooks)\n"
     printf "(a install-all, b toggle-banner, h (hacbs bundle), d (default bundle) )\n"
+    printf "(c switch to appstudio context, l switch to local-crc context)\n"
     printf  "%s\n" "Build Pipelines: $BUNDLE"
+    printf  "%s\n" "Current Context: $CONTEXT"
+
     read -n1 -p "Choose Demo or Command: "  SELECT 
     if [ "$SELECT" = "b"   ]; then 
         if [ "$BANNER" = "banner"   ]; then 
@@ -117,6 +128,26 @@ until [ "${CHOICE^}" != "" ]; do
         echo 
         echo "Exiting..."
         exit
+    fi 
+    if [ "$SELECT" = "c" ]; then 
+        echo 
+        echo "Switching to context called appstudio."
+        echo "This is your list, if appstudio is missing, go read the onboarding doc"
+        kubectl config get-contexts
+        echo "running oc config  use-context appstudio"
+        oc config  use-context appstudio
+        updateserverinfo
+        read -n1 -p "press key to continue: "  WAIT
+    fi 
+    if [ "$SELECT" = "l" ]; then 
+        echo 
+        echo "Switching to context for local CRC"
+        echo "This is your list, if appstudio is missing, go read the onboarding doc"
+        kubectl config get-contexts  
+        echo "running oc config  use-context  default/api-crc-testing:6443/kubeadmin"
+        oc config  use-context  "default/api-crc-testing:6443/kubeadmin"
+        updateserverinfo
+        read -n1 -p "press key to continue: "  WAIT
     fi 
     if [ "$SELECT" = "s" ]; then
         SHOWSTATUS=yes 

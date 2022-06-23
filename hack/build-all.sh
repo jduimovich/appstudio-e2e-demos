@@ -8,7 +8,7 @@ for rt in $RTS
 do
   echo 
   C="${rt:2}" 
-  REPO=$(yq '.spec.source.git.url' demos/$NS/components/$C.yaml)
+  REPO=$(yq '.spec.source.git.url' demos/$C/components/$C.yaml)
   TAG=$(git ls-remote $REPO HEAD |  cut -f 1)
   echo "Repo: $REPO  "
   echo " TAG: $TAG"
