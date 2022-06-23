@@ -10,7 +10,7 @@ metadata:
 components:
   - name: outerloop-build
     image:
-      imageName: sna
+      imageName: user-workload:sna
       dockerfile:
         uri: docker/Dockerfile
         buildContext: .
