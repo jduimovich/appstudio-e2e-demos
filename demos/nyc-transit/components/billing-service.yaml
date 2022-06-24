@@ -6,7 +6,12 @@ spec:
   componentName: billing-service
   application: nyc-transit
   containerImage: quay.io/jduimovich0/devfile-sample-code-with-quarkus
-  targetPort: 8081
+  targetPort: 8081  
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
   source:
     git:
       url: https://github.com/devfile-samples/devfile-sample-code-with-quarkus
