@@ -1,0 +1,21 @@
+
+export WHICH_SERVER=$(oc whoami)
+export APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
+if [ -n "$APP_STUDIO" ]
+then
+        APP_STUDIO_NS=$(oc project --short)  
+fi
+
+for dir in demos/*
+do
+    APP=$(basename $dir)
+    if [ -n "$APP_STUDIO" ]
+    then 
+        oc delete application $APP -n $APP_STUDIO_NS
+    else  
+        oc delete application $APP -n $APP  
+        oc delete project $APP  
+    fi
+done
+
+    
