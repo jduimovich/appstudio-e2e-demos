@@ -12,8 +12,9 @@ echo "$0 $URL $TAG "
 
 FILE=$(mktemp) 
 PATCH=".head_commit.id=\"$TAG\""   
+echo "jq $PATCH $SCRIPTDIR/payload.json"    
 jq "$PATCH" $SCRIPTDIR/payload.json > $FILE   
 #
-curl.exe --silent --insecure -d @$FILE -H 'Content-Type: application/json'  $URL | jq
+curl.exe --silent --insecure -d @$FILE -H 'Content-Type: application/json'  $URL  
  
  

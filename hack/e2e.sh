@@ -54,9 +54,13 @@ fi
 
 if [ "$BUNDLE" = "hacbs" ]; then 
   echo
-  echo "Use the HACBS Repos in $NS"
+  echo "Use the HACBS pipelines in $NS"
   oc create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
-    oc apply -f -
+    oc apply -n $NS -f -
+else 
+  echo
+  echo "Use the default pipelines in $NS"
+  oc delete configmap build-pipelines-defaults -n $NS   2>/dev/null
 fi
 
 if [ -n "$APP_STUDIO" ]
