@@ -1,54 +1,62 @@
 
-#!/bin/bash
+#!/bin/bash   
 
-QUERY=$(oc get pipelineruns -o yaml)
+B=$(mktemp)
+M=$(mktemp)
+R=$(mktemp)
+COUNTER=0
+function printPR() {   
 for prindex in {0..100}
 do   
-    PR=$(echo "$QUERY"  | yq e '.items['$prindex']')  
+    PR=$(echo "$1"  | yq e '.items['$prindex']')  
     if [  "$PR" != "null" ]
-        then     
-        BUILD=$(echo "$PR"  | yq e '.metadata.name')  
-        message=$(echo "$PR"  | yq e '.status.conditions[0].message')  
-        IMG=$(echo "$PR"  | yq e '.spec.params[1].value') 
-        echo "$prindex: $BUILD"
-        echo " $IMG"  
-        echo " $message"  
-        echo 
+    then 
+        status=$(echo "$PR"  | yq e '.status.conditions[0].status')  
+        if [ "$2" = "$status" ] 
+        then
+                let COUNTER++
+                echo "$PR"  | yq e '.metadata.name' > $B &
+                echo "$PR"  | yq e '.status.conditions[0].message' > $M &
+                echo "$PR"  | yq e '.spec.params[1].value' > $R &
+                wait
+                build=$(< $B)  
+                message=$(< $M)  
+                img=$(< $R) 
+                wait
+                echo "$COUNTER: $build $status"
+                echo " $img"  
+                echo " $message"  
+                echo
+         fi
     else  
          break
     fi 
-done
- 
-exit
-
-STATUS=$(oc get pr $1 -o jsonpath='{.status.conditions[0].status}') 
-if [ "$STATUS" = "False" ]; then 
-   printf "\nBuild %20s Failed\n" "$1"   
-            exit 1
-fi 
-
-print_formatted_status () {
-   BUILDNAME=$1
-   LABEL=$2
-   JSONPATH=$3
-   FIELD=$4
-   ESCAPED=$(echo "$FIELD" | sed 's/\./\\./g') 
-
-   VALUE=$(oc get pr $BUILDNAME -o jsonpath="{$JSONPATH.$ESCAPED}") 
-   if [ -z "$VALUE" ]
-   then
-      VALUE='(not-set)'
-   fi 
-   printf " %-20s : %s\n" "$LABEL" "$VALUE"
+done    
 }
- 
-printf "\nBuild %20s\n" "$1"  
-print_formatted_status $1 "Status"     ".status.conditions[0]" "status"
-print_formatted_status $1 "Message"     ".status.conditions[0]" "message"
-print_formatted_status $1 "IsBuild"    ".metadata.annotations" "build.appstudio.openshift.io/build"
-print_formatted_status $1 "Type"       ".metadata.annotations" "build.appstudio.openshift.io/type"
-print_formatted_status $1 "Version"    ".metadata.annotations" "build.appstudio.openshift.io/version"
-print_formatted_status $1 "Repo"       ".metadata.annotations" "build.appstudio.openshift.io/repo" 
-print_formatted_status $1 "Image"      ".metadata.annotations" "build.appstudio.openshift.io/image"
-print_formatted_status $1 "Manifest"   ".metadata.annotations" "build.appstudio.openshift.io/deploy"
- 
+
+export APP_STUDIO=$(oc whoami | grep  "appstudio-") 
+if [ -n "$APP_STUDIO" ]
+then
+        export DIRS=$(oc project --short) 
+else
+        export DIRS=$(ls demos/) 
+fi
+
+for ns in $DIRS 
+do
+   QUERY=$(oc get pipelineruns -o yaml -n $ns)
+   echo "Running in $ns ... "
+   printPR "$QUERY" "Unknown"  
+   echo "----------------------------------------------" 
+   echo  
+   echo "Completed in $ns ... "
+   printPR "$QUERY" "True"   
+   echo "----------------------------------------------" 
+   echo  
+   echo "Failed in $ns ... "
+   printPR "$QUERY" "False"   
+   echo "----------------------------------------------" 
+   echo  
+done
+
+          
