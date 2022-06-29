@@ -15,7 +15,7 @@ spec:
   source:
     git:
       url: https://github.com/Apicurio/apicurio-registry
-      devfileUrl: https://raw.githubusercontent.com/ralphbean/appstudio-e2e-demos/main/demos/service-registry/devfiles/devfile.yaml
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/service-registry/devfiles/devfile.yaml
   build:
     containerImage: quay.io/jduimovich0/service-registry
 
