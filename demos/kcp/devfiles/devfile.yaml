@@ -8,7 +8,7 @@ metadata:
 components:
   - name: outerloop-build
     image:
-      imageName: service-provider-integration-operator:latest
+      imageName: kcp
       dockerfile:
         uri: Dockerfile
         buildContext: .
