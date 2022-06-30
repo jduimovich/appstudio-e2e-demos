@@ -3,9 +3,9 @@ declare -A DEMOS
 COUNTER=0
 for dir in demos/*
 do
-   if [ -d $dir ]; then   
-      DEMOS["$COUNTER"]=$(basename $dir) 
+   if [ -d $dir ]; then    
       let COUNTER++  
+      DEMOS["$COUNTER"]=$(basename $dir)
    fi
 done
 echo "$COUNTER demos found."  
@@ -106,11 +106,19 @@ until [ "${CHOICE^}" != "" ]; do
         done  
     fi 
     echo "--------------------------------"
-    for key in ${!sorted[@]} 
-    do  
-        printf "%3s: %-20s \n"  $key  ${DEMOS[$key]}
+    IDX=1
+    HALF=$(echo "$COUNTER / 2"  | bc)
+    TWOX=$(echo "$HALF * 2"  | bc)
+    for key in $(seq $HALF)
+    do
+        k2=$(echo "$key + $HALF" | bc)
+        printf "%3s: %-30s\t%3s: %-30s\n"  $key  ${DEMOS[$key]} $k2 ${DEMOS[$k2]}
     done
-    printf "Commands available: \n(q to quit, s for status, t trigger all webhooks)\n"
+    if [ "$TWOX" != "$COUNTER" ]; then 
+        printf "%3s: %-30s\n"  $COUNTER  ${DEMOS[$COUNTER]}
+    fi
+
+    printf "Commands available: \n(q to quit, s for status, p (show pipelines), t trigger  webhooks)\n"
     printf "(a install-all, b toggle-banner, h (hacbs bundle), d (default bundle) )\n"
     printf "(c switch to appstudio context, l switch to local-crc context)\n"
     printf  "%s\n" "Build Pipelines: $BUNDLE"
@@ -154,6 +162,12 @@ until [ "${CHOICE^}" != "" ]; do
     fi
     if [ "$SELECT" = "t" ]; then
         TRIGGER_BUILDS=yes 
+    fi
+    if [ "$SELECT" = "p" ]; then
+        echo
+        echo "Show all pipelines"
+        ./hack/ls-builds.sh 
+        read -n1 -p "Press any key to continue ..."  WAIT
     fi
     if [ "$SELECT" = "a" ]; then 
         echo; echo "Run All"
