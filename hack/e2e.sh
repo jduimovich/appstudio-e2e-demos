@@ -8,16 +8,6 @@ then
       echo Missing parameter Demo Directory 
       exit -1 
 fi
-if [ -z "$MY_QUAY_USER" ]
-then
-      echo Missing env MY_QUAY_USER
-      exit -1 
-fi
-if [ -z "$MY_QUAY_TOKEN" ]
-then
-      echo Missing env MY_QUAY_USER 
-      exit -1 
-fi
 if [ -z "$BUNDLE" ]
 then
       BUNDLE=default 
@@ -36,6 +26,16 @@ then
         NS=$(oc project --short)
 else   
         NS=$APPNAME
+        if [ -z "$MY_QUAY_USER" ]
+        then
+              echo Missing env MY_QUAY_USER
+              exit -1 
+        fi
+        if [ -z "$MY_QUAY_TOKEN" ]
+        then
+              echo Missing env MY_QUAY_USER 
+              exit -1 
+        fi
 fi 
 echo "Installing AppName: $APPNAME"
 echo "Namespace: $NS"  
@@ -126,7 +126,29 @@ do
   else
     QUAY_USER=$MY_QUAY_USER
     COMP=$B 
-  fi 
+  fi
+  DEVFILEURL=$(yq '.spec.source.git.devfileUrl' $component)
+  if [  "$DEVFILEURL" != "null" ]
+  then  
+    prefix="https://raw.githubusercontent.com/jduimovich"
+    END=${DEVFILEURL#"$prefix"}
+    if [  "$DEVFILEURL" != "$END" ]
+    then
+      GITUSER=$(git remote -v | tail -n 1 |  cut -d '/' -f 4  |tr -d '\n')
+      NEWURL="https://raw.githubusercontent.com/$GITUSER$END"  
+      if [  "$DEVFILEURL" != "$NEWURL" ]
+      then
+        newcomponent=$(mktemp)
+        yq '.spec.source.git.devfileUrl="'$NEWURL'"' $component > $newcomponent 
+        component=$newcomponent
+        echo "Devfile reference modified to $NEWURL"
+      fi
+    else 
+      echo "Devfile reference unmodified $DEVFILEURL"
+    fi
+  else
+    echo "NO DEVFILEURL in component"
+  fi
   FULL_IMAGE=quay.io/$QUAY_USER/$COMP
   echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
    yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
