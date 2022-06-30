@@ -45,16 +45,25 @@ fi
 for ns in $DIRS 
 do
    QUERY=$(oc get pipelineruns -o yaml -n $ns)
-   echo "Running in $ns ... "
-   printPR "$QUERY" "Unknown"  
+
+   echo "Running Pipelines in $ns ... "
+   COUNTER=0
+   printPR "$QUERY" "Unknown"     
+   echo "$COUNTER Pipelines actively Running"
    echo "----------------------------------------------" 
    echo  
-   echo "Completed in $ns ... "
-   printPR "$QUERY" "True"   
+
+   echo "Completed Pipelines in $ns ... "
+   COUNTER=0
+   printPR "$QUERY" "True"
+   echo "$COUNTER Completed Pipelines"
    echo "----------------------------------------------" 
-   echo  
-   echo "Failed in $ns ... "
+   echo 
+
+   echo "Failed Pipelines in $ns ... "
+   COUNTER=0
    printPR "$QUERY" "False"   
+   echo "$COUNTER Failed Pipelines"
    echo "----------------------------------------------" 
    echo  
 done
