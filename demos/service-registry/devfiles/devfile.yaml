@@ -1,0 +1,32 @@
+schemaVersion: 2.2.0
+metadata:
+  name: java-quarkus
+  version: 1.1.0
+  provider: Red Hat
+  supportUrl: https://github.com/devfile-samples/devfile-support#support-information
+  website: https://quarkus.io
+  displayName: Quarkus Java
+  description: Upstream Quarkus with Java+GraalVM
+  tags: ["Java", "Quarkus"]
+  projectType: "quarkus"
+  language: "java"
+  attributes:
+    alpha.dockerimage-port: 8081
+parent:
+  id: java-quarkus
+  registryUrl: "https://registry.devfile.io"
+components:
+  - name: outerloop-deploy
+    kubernetes:
+      uri: outerloop-deploy.yaml
+commands:
+  - id: deployk8s
+    apply:
+      component: outerloop-deploy
+  - id: deploy
+    composite:
+      commands:
+        - deployk8s
+      group:
+        kind: deploy
+        isDefault: true

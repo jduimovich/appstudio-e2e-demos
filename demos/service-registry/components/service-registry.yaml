@@ -1,0 +1,21 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: service-registry
+spec:
+  componentName: service-registry
+  application: service-registry
+  containerImage: quay.io/jduimovich0/service-registry
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  source:
+    git:
+      url: https://github.com/Apicurio/apicurio-registry
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/service-registry/devfiles/devfile.yaml
+  build:
+    containerImage: quay.io/jduimovich0/service-registry
+
