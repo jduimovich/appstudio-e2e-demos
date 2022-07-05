@@ -6,12 +6,6 @@ spec:
   componentName: kcp
   application: kcp
   containerImage: quay.io/jduimovich0/kcp
-  targetPort: 8080
-  replicas: 1
-  resources:
-    requests:
-      cpu: 250m
-      memory: 512Mi
   source:
     git:
       url: https://github.com/kcp-dev/kcp

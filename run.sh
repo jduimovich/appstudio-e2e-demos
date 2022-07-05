@@ -46,8 +46,8 @@ until [ "${CHOICE^}" != "" ]; do
             # one namespace, so build all in that one only
             ./hack/build-all.sh $APP_STUDIO_NS
         else
-            # many namespaces, build all in each
-            for key in ${!sorted[@]} 
+            # many namespaces, build all in each 
+            for key in $(seq $COUNTER)
             do   
                 ./hack/build-all.sh ${DEMOS[$key]} 
                 #read -n1 -p "Press any key to continue ..."  WAIT
@@ -58,8 +58,8 @@ until [ "${CHOICE^}" != "" ]; do
     if [ "$SHOWSTATUS" = "yes" ]; then
         SHOWSTATUS=no
         echo "--------------------------------"
-        echo "STATUS "
-        for key in ${!sorted[@]} 
+        echo "STATUS " 
+        for key in $(seq $COUNTER)
         do  
             if [ -n "$APP_STUDIO" ]
             then
