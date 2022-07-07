@@ -5,7 +5,8 @@ metadata:
 spec:
   componentName: haproxy
   application: graphtuitous
-  containerImage: quay.io/jduimovich0/haproxy
+  containerImage: quay.io/jduimovich0/haproxy 
+  targetPort: 8080
   replicas: 1
   resources:
     requests:
