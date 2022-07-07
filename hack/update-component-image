@@ -1,0 +1,20 @@
+ COMP=$1
+ IMG=$2
+
+echo "$COMP"
+echo "$IMG"
+if [ -z "$COMP" ]
+then
+       echo "missing component "
+       exit 1 
+fi
+ if [ -z "$IMG" ]
+then
+       echo "missing image "
+       exit 1 
+fi 
+ oc patch component  --type='json' -p='{"build":{"containerImage": "'$IMG'"}}'
+
+ oc get component $COMP -n $COMP -o yaml  | \
+     yq '.spec.containerImage="'$IMG'"' | \
+     oc apply -n $COMP  -f -
