@@ -12,8 +12,7 @@ fi
 then
        echo "missing image "
        exit 1 
-fi 
- oc patch component  --type='json' -p='{"build":{"containerImage": "'$IMG'"}}'
+fi  
 
  oc get component $COMP -n $COMP -o yaml  | \
      yq '.spec.containerImage="'$IMG'"' | \
