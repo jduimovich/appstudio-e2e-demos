@@ -25,7 +25,8 @@ then
         echo Running in App Studio
         NS=$(oc project --short)
 else   
-        NS=$APPNAME
+        NS=$APPNAME 
+        oc project $NS
         if [ -z "$MY_QUAY_USER" ]
         then
               echo Missing env MY_QUAY_USER
@@ -88,6 +89,7 @@ then
   cp $DEMODIR/app/*  $SCRIPTDIR/logs/$LOG/ 
 else
 # use the directory to create an app
+  echo "No App Definition Found, in $DEMODIR/app." 
 $SCRIPTDIR/create-app.sh $APPNAME $NS
 fi
  
@@ -100,7 +102,7 @@ done
 echo "Waiting for Application: $APPNAME to be ready."
 while :
 do
-    STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[].status')
+    STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[0].status') 
     if [ "$STATUS" == "True" ]
     then 
         break
