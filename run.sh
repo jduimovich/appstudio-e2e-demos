@@ -170,10 +170,10 @@ until [ "${CHOICE^}" != "" ]; do
         read -n1 -p "Press any key to continue ..."  WAIT
     fi
     if [ "$SELECT" = "a" ]; then 
-        echo; echo "Run All"
-        for run in ${!sorted[@]} 
+        echo; echo "Run All" 
+        for key in $(seq $COUNTER)
         do   
-            ./hack/e2e.sh demos/${DEMOS[$run]} $BUNDLE
+            ./hack/e2e.sh demos/${DEMOS[$key]} $BUNDLE
         done 
     fi
     if [ "$SELECT" = "h" ]; then 
