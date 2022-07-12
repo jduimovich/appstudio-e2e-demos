@@ -98,7 +98,8 @@ echo "Creating Application: $APPNAME"
 while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do
   echo -n . 
   sleep 1
-done 
+done
+echo 
 echo "Waiting for Application: $APPNAME to be ready."
 while :
 do

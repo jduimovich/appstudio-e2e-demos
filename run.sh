@@ -58,21 +58,27 @@ until [ "${CHOICE^}" != "" ]; do
     if [ "$SHOWSTATUS" = "yes" ]; then
         SHOWSTATUS=no
         echo "--------------------------------"
-        echo "STATUS " 
-        for key in $(seq $COUNTER)
+        echo "STATUS "
+        if [ -n "$APP_STUDIO" ]
+            then
+                KEYS=$(oc get application -o yaml | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
+            else
+                KEYS=$(oc get application -o yaml --all-namespaces | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
+            fi  
+        echo 
+        for app in $KEYS
         do  
             if [ -n "$APP_STUDIO" ]
             then
                 NS=$APP_STUDIO_NS
             else
-                NS=${DEMOS[$key]} 
-            fi 
-            kubectl get Application ${DEMOS[$key]} -n $NS &> /dev/null
-            ERR=$? 
+                NS=$app
+            fi  
+            ERR="0"
             if [  "$ERR" == "0" ]
             then
-                printf "\nApplication: ${DEMOS[$key]}\n" 
-                for c in demos/${DEMOS[$key]}/components/*
+                printf "\nApplication: $app\n" 
+                for c in demos/$app/components/*
                 do 
                    NM=$(yq '.metadata.name' $c)
                    REPO=$(yq '.spec.source.git.url' $c)
@@ -82,9 +88,9 @@ until [ "${CHOICE^}" != "" ]; do
                 then
                     NS=$APP_STUDIO_NS
                 else
-                    NS=${DEMOS[$key]} 
+                    NS=$app
                 fi  
-                GOPS=$(oc get application ${DEMOS[$key]}  -n $NS -o yaml | \
+                GOPS=$(oc get application $app -n $NS -o yaml | \
                      yq '.status.devfile' | \
                      yq '.metadata.attributes' |
                      grep gitOpsRepository.url | 
@@ -98,10 +104,7 @@ until [ "${CHOICE^}" != "" ]; do
                 oc get routes -n $NS  -o yaml  2>/dev/null | 
                     yq '.items[].spec.host | select(. != "el*")' |  
                     xargs -n 1 printf "\tRoute: https://%s\n"
-                printf " "
-
-            else 
-                printf "\n${DEMOS[$key]} not running\n"
+                printf " " 
             fi 
         done  
     fi 
