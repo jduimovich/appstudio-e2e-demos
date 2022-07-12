@@ -88,9 +88,8 @@ then
   oc apply -n $NS -f $DEMODIR/app  
   cp $DEMODIR/app/*  $SCRIPTDIR/logs/$LOG/ 
 else
-# use the directory to create an app
-  echo "No App Definition Found, in $DEMODIR/app." 
-$SCRIPTDIR/create-app.sh $APPNAME $NS
+# use the directory to create an app 
+  $SCRIPTDIR/create-app.sh $APPNAME $NS
 fi
  
 echo

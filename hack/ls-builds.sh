@@ -29,6 +29,7 @@ do
                 echo
          fi
     else  
+        echo "NO MORE"
          break
     fi 
 done    
@@ -37,35 +38,34 @@ done
 export APP_STUDIO=$(oc whoami | grep  "appstudio-") 
 if [ -n "$APP_STUDIO" ]
 then
-        export DIRS=$(oc project --short) 
-else
-        export DIRS=$(ls demos/) 
-fi
+    export DIRS=$(oc project --short)  
+fi 
+ALL_NS="--all-namespaces"
+if [ -n "$APP_STUDIO" ]
+then
+    ALL_NS="-n $DIRS" 
+fi  
+QUERY=$(oc get pipelineruns -o yaml  $ALL_NS)
 
-for ns in $DIRS 
-do
-   QUERY=$(oc get pipelineruns -o yaml -n $ns)
+echo "Running: "
+COUNTER=0
+printPR "$QUERY" "Unknown"  
+echo "$COUNTER Pipelines actively Running"
+echo "----------------------------------------------" 
+echo  
 
-   echo "Running Pipelines in $ns ... "
-   COUNTER=0
-   printPR "$QUERY" "Unknown"     
-   echo "$COUNTER Pipelines actively Running"
-   echo "----------------------------------------------" 
-   echo  
+echo "Completed:"
+COUNTER=0
+printPR "$QUERY" "True"
+echo "$COUNTER Completed Pipelines"
+echo "----------------------------------------------" 
+echo 
 
-   echo "Completed Pipelines in $ns ... "
-   COUNTER=0
-   printPR "$QUERY" "True"
-   echo "$COUNTER Completed Pipelines"
-   echo "----------------------------------------------" 
-   echo 
+echo "Failed:"
+COUNTER=0
+printPR "$QUERY" "False"
+echo "$COUNTER Failed Pipelines"
+echo "----------------------------------------------" 
+echo
 
-   echo "Failed Pipelines in $ns ... "
-   COUNTER=0
-   printPR "$QUERY" "False"   
-   echo "$COUNTER Failed Pipelines"
-   echo "----------------------------------------------" 
-   echo  
-done
-
-          
+ 
