@@ -28,8 +28,7 @@ do
                 echo " $message"  
                 echo
          fi
-    else  
-        echo "NO MORE"
+    else   
          break
     fi 
 done    
