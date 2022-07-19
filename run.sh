@@ -249,7 +249,7 @@ until [ "${CHOICE^}" != "" ]; do
 
     if [ "$SELECT" = "m" ]; then 
         clear 
-        echo "Select which apps to install (a for all, n for none)"
+        printf "Select which apps to install \n(space to select/deselect, a for all, n for none, enter to run)\n\n"
         CHOICE=""
         SET=""
         SEP=""
