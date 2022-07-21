@@ -1,18 +1,26 @@
  COMP=$1
  IMG=$2
+ NS=$3
 
 if [ -z "$COMP" ]
 then
        echo "missing component "
        exit 1 
 fi
- if [ -z "$IMG" ]
+if [ -z "$IMG" ]
 then
        echo "missing image "
        exit 1 
-fi  
+fi 
+if [ -z "$NS" ]
+then
+NSX=""
+else 
+NSX="-n $NS"
+fi 
+
 
 echo "Updating Component: $COMP image to: $IMG"
- oc get component $COMP -n $COMP -o yaml  | \
+ oc get component $COMP $NSX -o yaml  | \
      yq '.spec.containerImage="'$IMG'"' | \
-     oc apply -n $COMP  -f -
+     oc apply $NSX -f -

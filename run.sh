@@ -193,14 +193,18 @@ until [ "${CHOICE^}" != "" ]; do
                 NS=$APP_STUDIO_NS 
             fi   
             printf "\nApplication: $app\n" 
-            for c in demos/$app/components/*
-            do 
-               # for speed, component name is just path
-               #NM=$(yq '.metadata.name' $c)
-               NM=$(basename $c)
-               REPO=$(yq '.spec.source.git.url' $c)
-               printf "\tComponent: %s @ %s\n" $NM $REPO
-            done
+            if [ -d demos/$app/components/ ]; then   
+                for c in demos/$app/components/*
+                do 
+                # for speed, component name is just path
+                #NM=$(yq '.metadata.name' $c)
+                NM=$(basename $c)
+                REPO=$(yq '.spec.source.git.url' $c)
+                printf "\tComponent: %s @ %s\n" $NM $REPO
+                done
+            else
+                echo "External app to this demo, will show contents"
+            fi 
             if [ -n "$APP_STUDIO" ]
             then
                 NS=$APP_STUDIO_NS
