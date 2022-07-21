@@ -150,9 +150,8 @@ function prompt_for_multiselect {
 }
 
 BUNDLE=default   
-BANNER=banner
-MENU_TEXT=menu.txt 
-CHOICE=    
+BANNER=banner-small
+MENU_TEXT=menu.txt  
 PROMPT_DEMOS=""
 SELECTED_DEMOS=""
 seperator=""
