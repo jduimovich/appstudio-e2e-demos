@@ -4,7 +4,7 @@ metadata:
   name: actions-to-appstudio
 spec:
   componentName: actions-to-appstudio
-  application: actions-to-appstudio
+  application: use-github-as-ci
   containerImage: ghcr.io/jduimovich/actions-to-appstudio:latest
   targetPort: 8080
   replicas: 1
