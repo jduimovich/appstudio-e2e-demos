@@ -206,7 +206,8 @@ until [ "${SELECT^}" == "q" ]; do
                 fi
                 let SCOUNTER++
             done 
-        fi 
+        fi         
+        read -n1 -p "press key to continue: "  WAIT
     fi 
     #show all running, instead of individual ones
     if [ "$SELECT" = "z" ]; then  
