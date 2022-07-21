@@ -1,0 +1,28 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: IntegrationTestScenario
+metadata:
+  name: contract
+spec:
+  application: kcp
+  #bundle: quay.io/redhat-appstudio/hacbs-templates-bundle:latest
+  # https://github.com/redhat-appstudio/build-definitions/blob/main/pipelines/hacbs/e2e-ec.yaml
+  #pipeline: e2e-ec
+  bundle: quay.io/kpavic/test-bundle:pipeline
+  pipeline: demo-pipeline
+  contexts:
+    - description: Runs only during component testing
+      name: component
+    - description: Runs only during application testing too
+      name: application
+  #environment:
+  #  name: wat
+  #  params: []
+  #  type: wat
+  #environment:
+  #  name: test-environment
+  #  params: []
+  #  type: workspace
+  params:
+    - name: test-param
+      value:
+        - test

@@ -1,0 +1,16 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: hacbs-probe-payload
+spec:
+  componentName: hacbs-probe-payload
+  application: hacbs-probe-payload
+  containerImage: quay.io/rbean/hacbs-probe-payload
+  targetPort: 8081
+  source:
+    git:
+      url: https://github.com/ralphbean/hacbs-probe-payload
+      branch: build-happy-path
+  build:
+    containerImage: quay.io/rbean/hacbs-probe-payload
+
