@@ -155,11 +155,13 @@ MENU_TEXT=menu.txt
 PROMPT_DEMOS=""
 SELECTED_DEMOS=""
 seperator=""
-for x in ${DEMOS[@]}
+let SCOUNTER=1
+for ignored in ${DEMOS[@]}
 do 
-    PROMPT_DEMOS=$PROMPT_DEMOS$seperator$x
+    PROMPT_DEMOS=$PROMPT_DEMOS$seperator${DEMOS[$SCOUNTER]}
     SELECTED_DEMOS=$SELECTED_DEMOS$seperator"false"
     seperator=";"
+    let SCOUNTER++
 done   
 
 until [ "${SELECT^}" == "q" ]; do
@@ -200,15 +202,15 @@ until [ "${SELECT^}" == "q" ]; do
             do  
                 if [ "$selected" = "true" ]; then 
                     echo "Trigger Pipeline in ${DEMOS[$SCOUNTER]} "
-                    ./hack/build-all.sh ${DEMOS[$SCOUNTER]}
-                    ./hack/e2e.sh demos/${DEMOS[$SCOUNTER]} $BUNDLE  
+                    ./hack/build-all.sh ${DEMOS[$SCOUNTER]} 
                 fi
                 let SCOUNTER++
             done 
         fi 
-    fi
-    if [ "$SELECT" = "s" ]; then  
-        echo "--------------------------------"
+    fi 
+    #show all running, instead of individual ones
+    if [ "$SELECT" = "z" ]; then  
+        clear 
         echo "STATUS "
         ALL_NS="--all-namespaces"
         if [ -n "$APP_STUDIO" ]
@@ -259,6 +261,59 @@ until [ "${SELECT^}" == "q" ]; do
                 xargs -n 1 printf "\tRoute: https://%s\n"
             printf " "  
         done  
+        read -n1 -p "press key to continue: "  WAIT
+    fi
+    if [ "$SELECT" = "s" ]; then
+        clear 
+        echo "STATUS " 
+        ANY_SELECTED=false 
+        let SCOUNTER=1
+        for selected in $result
+        do   
+            if [ "$selected" = "true" ]; then 
+                ANY_SELECTED=true 
+                app=${DEMOS[$SCOUNTER]}  
+                NS=$app
+                if [ -n "$APP_STUDIO" ]
+                then
+                    NS=$APP_STUDIO_NS 
+                fi   
+                printf "\nApplication: $app\n" 
+                if [ -d demos/$app/components/ ]; then   
+                    for c in demos/$app/components/*
+                    do 
+                    # for speed, component name is just path
+                    #NM=$(yq '.metadata.name' $c)
+                    NM=$(basename $c)
+                    REPO=$(yq '.spec.source.git.url' $c)
+                    printf "\tComponent: %s @ %s\n" $NM $REPO
+                    done
+                else
+                    echo "External app to this demo, will show contents"
+                fi  
+                GOPS=$(oc get application $app -n $NS -o yaml | \
+                    yq '.status.devfile' | \
+                    yq '.metadata.attributes' |
+                    grep gitOpsRepository.url | 
+                    cut -d ' ' -f 2)   
+                CONF=$(oc get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
+                if [ "$CONF" = "null" ]; then
+                    CONF=default 
+                fi
+                printf "\tPipelines Bundle: $CONF\n"
+                printf "\tGitops Repo: %s\n" "$GOPS"
+                oc get routes -n $NS  -o yaml  2>/dev/null | 
+                    yq '.items[].spec.host | select(. != "el*")' |  
+                    xargs -n 1 printf "\tRoute: https://%s\n"
+                printf " " 
+            fi
+            let SCOUNTER++
+        done   
+        if [ "$ANY_SELECTED" = "false" ]; then 
+                echo "Nothing was selected, no status"
+        fi
+        echo
+        read -n1 -p "press key to continue: "  WAIT
     fi  
     if [ "$SELECT" = "q" ]; then 
         echo 
