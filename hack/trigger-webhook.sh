@@ -15,6 +15,5 @@ PATCH=".head_commit.id=\"$TAG\""
 echo "jq $PATCH $SCRIPTDIR/payload.json"    
 jq "$PATCH" $SCRIPTDIR/payload.json > $FILE   
 #
-curl.exe --silent --insecure -d @$FILE -H 'Content-Type: application/json'  $URL  
- 
- 
+curl --silent --insecure -d @$FILE -H 'Content-Type: application/json'  $URL
+
