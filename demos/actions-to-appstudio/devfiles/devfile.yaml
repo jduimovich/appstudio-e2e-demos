@@ -10,7 +10,7 @@ metadata:
 components:
   - name: outerloop-build
     image:
-      imageName: gh-actions-ci
+      imageName: actions-to-appstudio
       dockerfile:
         uri: Dockerfile
         buildContext: .
