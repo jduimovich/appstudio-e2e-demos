@@ -1,6 +1,6 @@
 
- 
-q to quit, s for status, p (show pipelines), t (trigger  webhooks)
+
+q to quit, s for status, p (show pipelines), t (trigger webhooks)
 a install-all, h (hacbs bundle), d (default bundle)  
 c (use appstudio context), l (use local-crc )
   

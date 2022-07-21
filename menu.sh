@@ -123,7 +123,7 @@ function prompt_for_multiselect {
             fi
             ((idx++))
         done
-        cat $TAIL
+        cat $MENU_TEXT
 
         # user key control
         keypress=`key_input` 
@@ -151,7 +151,7 @@ function prompt_for_multiselect {
 
 BUNDLE=default   
 BANNER=banner
-TAIL=tail 
+MENU_TEXT=menu.txt 
 CHOICE=    
 PROMPT_DEMOS=""
 SELECTED_DEMOS=""
