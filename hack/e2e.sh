@@ -159,7 +159,17 @@ do
       oc apply -f -
 done
 
-if [ -d "$DEMODIR/add-ons" ] 
+if [ -d "$DEMODIR/scenarios" ]
+then
+    echo "IntegrationTestScenarios exist with content."
+    echo "Install IntegrationTestScenarios."
+    oc apply -n $NS -f $DEMODIR/scenarios
+    cp $DEMODIR/scenarios/*  $SCRIPTDIR/logs/$LOG/
+else
+    echo "No IntegrationTestScenarios found for $APPNAME."
+fi
+
+if [ -d "$DEMODIR/add-ons" ]
 then
     echo "Add-ons exist with content."
     echo "Install Add-ons (hack)."  
