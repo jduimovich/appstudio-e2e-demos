@@ -339,7 +339,7 @@ until [ "${SELECT^}" == "q" ]; do
         read -n1 -p "press key to continue: "  WAIT
     fi 
     if [ "$SELECT" = "p" ]; then
-        echo
+        clear   
         echo "Show all pipelines"
         ./hack/ls-builds.sh 
         read -n1 -p "Press any key to continue ..."  WAIT
