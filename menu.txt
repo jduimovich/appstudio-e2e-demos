@@ -1,6 +1,5 @@
 
 
-Commands: 
  s (status), p (show pipelines), t (trigger webhooks), r (install selected)
  a (install-all) 
  c (use appstudio context), l (use local-crc )
