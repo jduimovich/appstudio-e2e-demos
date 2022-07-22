@@ -1,0 +1,16 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name:  ux-github-actions
+spec:
+  componentName:  ux-github-actions
+  application:  ux-github-actions
+  containerImage: ghcr.io/jduimovich/ux-github-actions:latest
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  build:
+    containerImage: ghcr.io/jduimovich/ux-github-actions:latest
