@@ -181,6 +181,7 @@ until [ "${SELECT^}" == "q" ]; do
         done 
     fi
     if [ "$SELECT" = "r" ]; then 
+        clear 
         let SCOUNTER=1
         for selected in $result
         do  
@@ -191,7 +192,8 @@ until [ "${SELECT^}" == "q" ]; do
             let SCOUNTER++
         done
     fi     
-    if [ "$SELECT" = "t" ]; then   
+    if [ "$SELECT" = "t" ]; then  
+        clear  
         if [ -n "$APP_STUDIO" ]
         then 
             # one namespace, so build all in that one only
