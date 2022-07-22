@@ -291,12 +291,12 @@ until [ "${SELECT^}" == "q" ]; do
                     done
                 else
                     echo "External app to this demo, will show contents"
-                fi  
-                GOPS=$(oc get application $app -n $NS -o yaml | \
+                fi   
+                GOPS=$(oc get application $app -n $NS -o yaml  2>/dev/null | \
                     yq '.status.devfile' | \
                     yq '.metadata.attributes' |
                     grep gitOpsRepository.url | 
-                    cut -d ' ' -f 2)   
+                    cut -d ' ' -f 2)    
                 CONF=$(oc get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
                 if [ "$CONF" = "null" ]; then
                     CONF=default 
