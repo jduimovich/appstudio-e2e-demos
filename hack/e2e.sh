@@ -41,6 +41,7 @@ fi
 echo "Installing AppName: $APPNAME"
 echo "Namespace: $NS"  
 LOG=$(basename $DEMODIR) 
+rm -rf $SCRIPTDIR/logs/$LOG
 mkdir -p $SCRIPTDIR/logs/$LOG
 echo "Log: $SCRIPTDIR/logs/$LOG" 
 
@@ -78,7 +79,7 @@ else
     oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
       --docker-server="https://quay.io" \
       --docker-username=$MY_QUAY_USER \
-      --docker-password=$MY_QUAY_TOKEN 
+      --docker-password=$MY_QUAY_TOKEN  2>/dev/null
   fi
 fi
 
@@ -105,13 +106,13 @@ do
     STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[0].status') 
     if [ "$STATUS" == "True" ]
     then 
+        echo
         break
     fi
     echo -n .
     sleep 1
 done 
-
-echo
+ 
 echo "Install Components. "  
 
 
@@ -149,14 +150,20 @@ do
       echo "Devfile reference unmodified $DEVFILEURL"
     fi
   else
-    echo "NO DEVFILEURL in component"
+    echo "No devfile in this repo for this component"
+  fi 
+  SRCURL=$(yq '.spec.source.git.url' $component)
+  if [  "$SRCURL" != "null" ]
+  then
+    FULL_IMAGE=quay.io/$QUAY_USER/$COMP
+    echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
+    yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
+      yq '.spec.build.containerImage="'$FULL_IMAGE'"' | \
+        tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
+        oc apply -f -
+  else 
+      echo "Binary only Component,  reference image unmodified $SRCURL"
   fi
-  FULL_IMAGE=quay.io/$QUAY_USER/$COMP
-  echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
-   yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
-    yq '.spec.build.containerImage="'$FULL_IMAGE'"' | \
-      tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
-      oc apply -f -
 done
 
 if [ -d "$DEMODIR/scenarios" ]

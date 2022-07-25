@@ -19,10 +19,48 @@ function updateserverinfo() {
         export APP_STUDIO_NS=$(oc project --short)
         export MODE="$APP_STUDIO_NS"
     else
-        export MODE="(namespace per project)\n"
+        export MODE="(namespace per project)"
         export  APP_STUDIO_NS="error"
     fi
     export  CONTEXT=$(oc config current-context)
+}
+
+function showappstatus() {
+    app=$1 
+    NS=$2
+    if [ -n "$APP_STUDIO" ]
+    then
+        NS=$APP_STUDIO_NS 
+    fi   
+    printf "\nApplication: $app\n" 
+    if [ -d demos/$app/components/ ]; then   
+        for c in demos/$app/components/*
+        do 
+        # for speed, component name is just path
+        #NM=$(yq '.metadata.name' $c)
+        NM=$(basename $c)
+        REPO=$(yq '.spec.source.git.url' $c)
+        printf "\tComponent: %s @ %s\n" $NM $REPO
+        done
+    else
+        echo "External app to this demo, will show contents"
+    fi   
+    GOPS=$(oc get application $app -n $NS -o yaml  2>/dev/null | \
+        yq '.status.devfile' | \
+        yq '.metadata.attributes' |
+        grep gitOpsRepository.url | 
+        cut -d ' ' -f 2)    
+    CONF=$(oc get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
+    if [ "$CONF" = "null" ]; then
+        CONF=default 
+    fi
+    printf "\tPipelines Bundle: $CONF\n"
+    printf "\tGitops Repo: %s\n" "$GOPS"
+    oc get routes -n $NS  -o yaml  2>/dev/null | 
+        yq '.items[].spec.host | select(. != "el*")' |  
+        xargs -n 1 printf "\tRoute: https://%s\n"
+    printf " " 
+
 }
 
 updateserverinfo   
@@ -191,6 +229,7 @@ until [ "${SELECT^}" == "q" ]; do
             fi
             let SCOUNTER++
         done
+        read -n1 -p "press key to continue: "  WAIT
     fi     
     if [ "$SELECT" = "t" ]; then  
         clear  
@@ -211,10 +250,10 @@ until [ "${SELECT^}" == "q" ]; do
         fi         
         read -n1 -p "press key to continue: "  WAIT
     fi 
-    #show all running, instead of individual ones
-    if [ "$SELECT" = "z" ]; then  
+    #show all running, instead of selected ones
+    if [ "$SELECT" = "s" ]; then  
         clear 
-        echo "STATUS "
+        echo "Show Status of All Applications"
         ALL_NS="--all-namespaces"
         if [ -n "$APP_STUDIO" ]
         then
@@ -223,97 +262,26 @@ until [ "${SELECT^}" == "q" ]; do
         KEYS=$(oc get  application.appstudio.redhat.com -o yaml $ALL_NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
         echo 
         for app in $KEYS
-        do  
-            NS=$app
-            if [ -n "$APP_STUDIO" ]
-            then
-                NS=$APP_STUDIO_NS 
-            fi   
-            printf "\nApplication: $app\n" 
-            if [ -d demos/$app/components/ ]; then   
-                for c in demos/$app/components/*
-                do 
-                # for speed, component name is just path
-                #NM=$(yq '.metadata.name' $c)
-                NM=$(basename $c)
-                REPO=$(yq '.spec.source.git.url' $c)
-                printf "\tComponent: %s @ %s\n" $NM $REPO
-                done
-            else
-                echo "External app to this demo, will show contents"
-            fi 
-            if [ -n "$APP_STUDIO" ]
-            then
-                NS=$APP_STUDIO_NS
-            else
-                NS=$app
-            fi  
-            GOPS=$(oc get application $app -n $NS -o yaml | \
-                 yq '.status.devfile' | \
-                 yq '.metadata.attributes' |
-                 grep gitOpsRepository.url | 
-                 cut -d ' ' -f 2)   
-            CONF=$(oc get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
-            if [ "$CONF" = "null" ]; then
-                CONF=default 
-            fi
-            printf "\tPipelines Bundle: $CONF\n"
-            printf "\tGitops Repo: %s\n" "$GOPS"
-            oc get routes -n $NS  -o yaml  2>/dev/null | 
-                yq '.items[].spec.host | select(. != "el*")' |  
-                xargs -n 1 printf "\tRoute: https://%s\n"
-            printf " "  
+        do   
+            showappstatus $app $app
         done  
         read -n1 -p "press key to continue: "  WAIT
     fi
-    if [ "$SELECT" = "s" ]; then
+    if [ "$SELECT" = "z" ]; then
         clear 
-        echo "STATUS " 
+        echo "Show Status of Selected Applications"
         ANY_SELECTED=false 
         let SCOUNTER=1
         for selected in $result
         do   
             if [ "$selected" = "true" ]; then 
-                ANY_SELECTED=true 
-                app=${DEMOS[$SCOUNTER]}  
-                NS=$app
-                if [ -n "$APP_STUDIO" ]
-                then
-                    NS=$APP_STUDIO_NS 
-                fi   
-                printf "\nApplication: $app\n" 
-                if [ -d demos/$app/components/ ]; then   
-                    for c in demos/$app/components/*
-                    do 
-                    # for speed, component name is just path
-                    #NM=$(yq '.metadata.name' $c)
-                    NM=$(basename $c)
-                    REPO=$(yq '.spec.source.git.url' $c)
-                    printf "\tComponent: %s @ %s\n" $NM $REPO
-                    done
-                else
-                    echo "External app to this demo, will show contents"
-                fi   
-                GOPS=$(oc get application $app -n $NS -o yaml  2>/dev/null | \
-                    yq '.status.devfile' | \
-                    yq '.metadata.attributes' |
-                    grep gitOpsRepository.url | 
-                    cut -d ' ' -f 2)    
-                CONF=$(oc get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
-                if [ "$CONF" = "null" ]; then
-                    CONF=default 
-                fi
-                printf "\tPipelines Bundle: $CONF\n"
-                printf "\tGitops Repo: %s\n" "$GOPS"
-                oc get routes -n $NS  -o yaml  2>/dev/null | 
-                    yq '.items[].spec.host | select(. != "el*")' |  
-                    xargs -n 1 printf "\tRoute: https://%s\n"
-                printf " " 
+                ANY_SELECTED=true  
+                showappstatus ${DEMOS[$SCOUNTER]} ${DEMOS[$SCOUNTER]}
             fi
             let SCOUNTER++
         done   
         if [ "$ANY_SELECTED" = "false" ]; then 
-                echo "Nothing was selected, no status"
+            echo "Nothing was selected, no status displayed"
         fi
         echo
         read -n1 -p "press key to continue: "  WAIT
