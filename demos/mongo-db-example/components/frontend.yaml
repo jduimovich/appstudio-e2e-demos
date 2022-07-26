@@ -1,0 +1,20 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: frontend
+spec:
+  componentName: frontend
+  application: mongo-db-example 
+  containerImage: quay.io/jduimovich0/mongo-db-example 
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 125m
+      memory: 256Mi
+  source:
+    git:
+      url: https://github.com/jduimovich/mongo-db-example
+  build:
+    containerImage: quay.io/jduimovich0/mongo-db-example 
+  

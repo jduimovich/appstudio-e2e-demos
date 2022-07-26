@@ -161,8 +161,12 @@ do
       yq '.spec.build.containerImage="'$FULL_IMAGE'"' | \
         tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
         oc apply -f -
-  else 
-      echo "Binary only Component,  reference image unmodified $SRCURL"
+  else
+      IMAGE=$(yq '.spec.containerImage' $component)
+      echo "Binary only Component,  reference image unmodified $IMAGE"
+      cat $component |  
+        tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
+        oc apply -f -
   fi
 done
 
