@@ -10,7 +10,7 @@ spec:
   replicas: 1
   resources:
     requests:
-      cpu: 250m
+      cpu: 10m
       memory: 512Mi
   build:
     containerImage: ghcr.io/jduimovich/actions-to-appstudio:latest
