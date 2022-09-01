@@ -5,7 +5,17 @@ C=$1
 NS=$2   
 if [ -z "$NS" ]
 then
-  NS=$(oc project --short)
+  WHICH_SERVER=$(oc whoami)
+  APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-")
+  echo "whoami: $WHICH_SERVER" 
+  if [ -n "$APP_STUDIO" ]
+  then
+          echo Running in App Studio
+          NS=$(oc project --short)
+  else   
+          echo Running in CRC
+          NS=$C   
+  fi 
 fi  
 rt=el$C
 REPO=$(oc get component  -n $NS $C -o yaml | yq '.spec.source.git.url') 

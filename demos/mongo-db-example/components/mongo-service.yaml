@@ -10,7 +10,7 @@ spec:
   replicas: 1
   resources:
     requests:
-      cpu: 125m
+      cpu: 50m
       memory: 512Mi 
   build:
     containerImage: quay.io/jduimovich0/mongo 

@@ -9,7 +9,7 @@ spec:
   replicas: 1
   resources:
     requests:
-      cpu: 250m
+      cpu: 50m
       memory: 512Mi
   targetPort: 8080
   source:

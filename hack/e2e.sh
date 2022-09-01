@@ -25,8 +25,7 @@ then
         echo Running in App Studio
         NS=$(oc project --short)
 else   
-        NS=$APPNAME 
-        oc project $NS
+        NS=$APPNAME  
         if [ -z "$MY_QUAY_USER" ]
         then
               echo Missing env MY_QUAY_USER

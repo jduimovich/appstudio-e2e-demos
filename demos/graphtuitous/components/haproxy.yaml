@@ -10,7 +10,7 @@ spec:
   replicas: 1
   resources:
     requests:
-      cpu: 200m
+      cpu: 30m
       memory: 128Mi
   source:
     git:
