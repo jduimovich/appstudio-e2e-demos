@@ -40,7 +40,7 @@ source $SCRIPTDIR/select-ns.sh default
 ALL_NS="--all-namespaces"
 if [ "$SINGLE_NAMESPACE_MODE" == true ]
 then
-    ALL_NS="-n $DIRS" 
+    ALL_NS="-n $SINGLE_NAMESPACE" 
 fi  
 QUERY=$(oc get pipelineruns -o yaml  $ALL_NS)
 

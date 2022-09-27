@@ -96,9 +96,7 @@ do
     sleep 1
 done 
  
-echo "Install Components. "  
-
-
+echo "Install Components. "   
 for component in $DEMODIR/components/*
 do
    IMG=$(yq '.spec.containerImage' $component)

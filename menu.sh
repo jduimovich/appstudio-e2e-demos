@@ -251,10 +251,11 @@ until [ "${SELECT^}" == "q" ]; do
     if [ "$SELECT" = "s" ]; then  
         clear 
         echo "Show Status of All Applications"
-        ALL_NS="--all-namespaces"
-        if [ -n "$APP_STUDIO" ]
-        then
-            ALL_NS=""       
+        if [ "$SINGLE_NAMESPACE_MODE" == true ]
+        then  
+            ALL_NS="-n $SINGLE_NAMESPACE"
+        else
+            ALL_NS="--all-namespaces"
         fi  
         KEYS=$(oc get  application.appstudio.redhat.com -o yaml $ALL_NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
         echo 

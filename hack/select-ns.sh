@@ -1,6 +1,5 @@
 WHICH_SERVER=$(oc whoami)
 APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-")
-echo "whoami: $WHICH_SERVER" 
 SINGLE_NAMESPACE_MODE=false
 SINGLE_NAMESPACE= 
 if [ -n "$APP_STUDIO" ]
