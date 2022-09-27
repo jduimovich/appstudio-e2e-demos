@@ -1,17 +1,13 @@
 
-export WHICH_SERVER=$(oc whoami)
-export APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
-if [ -n "$APP_STUDIO" ]
-then
-        APP_STUDIO_NS=$(oc project --short)  
-fi
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+source $SCRIPTDIR/select-ns.sh default  
 for dir in demos/*
 do
     APP=$(basename $dir)
-    if [ -n "$APP_STUDIO" ]
+    if [ -n "$SINGLE_NAMESPACE_MODE" ]
     then 
-        oc delete application $APP -n $APP_STUDIO_NS
+        oc delete application $APP -n $SINGLE_NAMESPACE
     else  
         oc delete application $APP -n $APP  
         oc delete project $APP  

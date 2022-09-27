@@ -12,25 +12,15 @@ echo "$COUNTER demos found."
 
 #
 function updateserverinfo() {
-    export WHICH_SERVER=$(oc whoami)
-    export APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
-    if [ -n "$APP_STUDIO" ]
-    then
-        export APP_STUDIO_NS=$(oc project --short)
-        export MODE="$APP_STUDIO_NS"
-    else
-        export MODE="(namespace per project)"
-        export  APP_STUDIO_NS="error"
-    fi
-    export  CONTEXT=$(oc config current-context)
+    source ./hack/select-ns.sh default  
 }
 
 function showappstatus() {
     app=$1 
     NS=$2
-    if [ -n "$APP_STUDIO" ]
+    if [ -n "$SINGLE_NAMESPACE_MODE" ]
     then
-        NS=$APP_STUDIO_NS 
+        NS=$SINGLE_NAMESPACE 
     fi   
     printf "\nApplication: $app\n" 
     if [ -d demos/$app/components/ ]; then   
@@ -205,7 +195,7 @@ done
 until [ "${SELECT^}" == "q" ]; do
     clear 
     cat $BANNER 
-    printf  "\nBuild: %s Context: %s Namespace: %s\n" "$BUNDLE"  "$CONTEXT" "$MODE"
+    printf  "\nBuild: %s  SingleNamespace: %s NS: <%s>\n" "$BUNDLE"  "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE"
     printf "Select apps (space to select/deselect, a for all, n for none)\n\n" 
     prompt_for_multiselect result "$PROMPT_DEMOS" "$SELECTED_DEMOS" SELECT   
     # recompute selected next loop  
@@ -233,10 +223,10 @@ until [ "${SELECT^}" == "q" ]; do
     fi     
     if [ "$SELECT" = "t" ]; then  
         clear  
-        if [ -n "$APP_STUDIO" ]
+        if [ -n "$SINGLE_NAMESPACE_MODE" ]
         then 
             # one namespace, so build all in that one only
-            ./hack/build-all.sh $APP_STUDIO_NS
+            ./hack/build-all.sh $SINGLE_NAMESPACE
         else
             let SCOUNTER=1
             for selected in $result

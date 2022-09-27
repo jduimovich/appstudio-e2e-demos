@@ -12,16 +12,7 @@ echo "$COUNTER demos found."
 
 #
 function updateserverinfo() {
-    export WHICH_SERVER=$(oc whoami)
-    export APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-") 
-    if [ -n "$APP_STUDIO" ]
-    then
-        export APP_STUDIO_NS=$(oc project --short)
-        export MODE="\napp-studio mode will use namespace $APP_STUDIO_NS.\n"
-    else
-        export MODE="\nDirect cluster mode will create a new namespace per project.\n"
-        export  APP_STUDIO_NS="error"
-    fi
+    source ./hack/select-ns.sh default
     export  CONTEXT=$(oc config current-context)
 }
 

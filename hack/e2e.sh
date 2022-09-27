@@ -14,29 +14,13 @@ then
 fi 
 
 
-APPNAME=$(basename $DEMODIR) 
-# in App Studio use the single namespace 
-# in regular full access cluster, use new namespaces ... 
-WHICH_SERVER=$(oc whoami)
-APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-")
-echo "whoami: $WHICH_SERVER" 
-if [ -n "$APP_STUDIO" ]
-then
-        echo Running in App Studio
-        NS=$(oc project --short)
-else   
-        NS=$APPNAME  
-        if [ -z "$MY_QUAY_USER" ]
-        then
-              echo Missing env MY_QUAY_USER
-              exit -1 
-        fi
-        if [ -z "$MY_QUAY_TOKEN" ]
-        then
-              echo Missing env MY_QUAY_USER 
-              exit -1 
-        fi
-fi 
+APPNAME=$(basename $DEMODIR)   
+# depending on where you are installing the namespace is different.
+# app studio fixes it as your user name
+# crc is per namespace because we can :) 
+# crc with hac is a single namespace (for now)
+source $SCRIPTDIR/select-ns.sh  $APPNAME
+
 echo "Installing AppName: $APPNAME"
 echo "Namespace: $NS"  
 LOG=$(basename $DEMODIR) 

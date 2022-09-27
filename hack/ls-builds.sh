@@ -1,5 +1,7 @@
 
 #!/bin/bash   
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 
 B=$(mktemp)
 M=$(mktemp)
@@ -34,13 +36,9 @@ do
 done    
 }
 
-export APP_STUDIO=$(oc whoami | grep  "appstudio-") 
-if [ -n "$APP_STUDIO" ]
-then
-    export DIRS=$(oc project --short)  
-fi 
+source $SCRIPTDIR/select-ns.sh default    
 ALL_NS="--all-namespaces"
-if [ -n "$APP_STUDIO" ]
+if [ -n "$SINGLE_NAMESPACE_MODE" ]
 then
     ALL_NS="-n $DIRS" 
 fi  
