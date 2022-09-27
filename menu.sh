@@ -15,10 +15,16 @@ function updateserverinfo() {
     source ./hack/select-ns.sh default  
 }
 
+function showroutes() {
+    NS=$1  
+    oc get routes -n $NS  -o yaml  2>/dev/null | 
+        yq '.items[].spec.host | select(. != "el*")' |  
+        xargs -n 1 printf "\tRoute: https://%s\n"
+}
 function showappstatus() {
     app=$1 
     NS=$2
-    if [ -n "$SINGLE_NAMESPACE_MODE" ]
+    if [ "$SINGLE_NAMESPACE_MODE" == true ]
     then
         NS=$SINGLE_NAMESPACE 
     fi   
@@ -26,11 +32,11 @@ function showappstatus() {
     if [ -d demos/$app/components/ ]; then   
         for c in demos/$app/components/*
         do 
-        # for speed, component name is just path
-        #NM=$(yq '.metadata.name' $c)
-        NM=$(basename $c)
-        REPO=$(yq '.spec.source.git.url' $c)
-        printf "\tComponent: %s @ %s\n" $NM $REPO
+            # for speed, component name is just path
+            #NM=$(yq '.metadata.name' $c)
+            NM=$(basename $c)
+            REPO=$(yq '.spec.source.git.url' $c)
+            printf "\tComponent: %s @ %s\n" $NM $REPO
         done
     else
         echo "External app to this demo, will show contents"
@@ -46,9 +52,10 @@ function showappstatus() {
     fi
     printf "\tPipelines Bundle: $CONF\n"
     printf "\tGitops Repo: %s\n" "$GOPS"
-    oc get routes -n $NS  -o yaml  2>/dev/null | 
-        yq '.items[].spec.host | select(. != "el*")' |  
-        xargs -n 1 printf "\tRoute: https://%s\n"
+    if [ "$SINGLE_NAMESPACE_MODE" == false ]
+    then 
+        showroutes $NS
+    fi  
     printf " " 
 
 }
@@ -223,7 +230,7 @@ until [ "${SELECT^}" == "q" ]; do
     fi     
     if [ "$SELECT" = "t" ]; then  
         clear  
-        if [ -n "$SINGLE_NAMESPACE_MODE" ]
+        if [ "$SINGLE_NAMESPACE_MODE" == true ]
         then 
             # one namespace, so build all in that one only
             ./hack/build-all.sh $SINGLE_NAMESPACE
@@ -255,6 +262,11 @@ until [ "${SELECT^}" == "q" ]; do
         do   
             showappstatus $app $app
         done  
+        if [ "$SINGLE_NAMESPACE_MODE" == true ]
+        then 
+            echo "Single Namespace: All Routes"
+            showroutes $NS
+        fi  
         read -n1 -p "press key to continue: "  WAIT
     fi
     if [ "$SELECT" = "z" ]; then

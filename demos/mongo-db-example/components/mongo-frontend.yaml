@@ -1,9 +1,9 @@
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Component
 metadata:
-  name: frontend
+  name: mongo-frontend
 spec:
-  componentName: frontend
+  componentName: mongo-frontend
   application: mongo-db-example 
   containerImage: quay.io/jduimovich0/mongo-db-example 
   targetPort: 8080

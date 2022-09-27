@@ -38,7 +38,7 @@ done
 
 source $SCRIPTDIR/select-ns.sh default    
 ALL_NS="--all-namespaces"
-if [ -n "$SINGLE_NAMESPACE_MODE" ]
+if [ "$SINGLE_NAMESPACE_MODE" == true ]
 then
     ALL_NS="-n $DIRS" 
 fi  
