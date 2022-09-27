@@ -264,6 +264,7 @@ until [ "${SELECT^}" == "q" ]; do
         done  
         if [ "$SINGLE_NAMESPACE_MODE" == true ]
         then 
+            echo
             echo "Single Namespace: All Routes"
             showroutes $NS
         fi  

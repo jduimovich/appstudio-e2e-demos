@@ -1,9 +1,9 @@
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Component
 metadata:
-  name: graphtuitous-fe
+  name: frontend
 spec:
-  componentName: graphtuitous-fe
+  componentName: frontend
   application: graphtuitous
   containerImage: quay.io/jduimovich0/frontend
   targetPort: 8080
