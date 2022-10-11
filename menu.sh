@@ -202,7 +202,11 @@ done
 until [ "${SELECT^}" == "q" ]; do
     clear 
     cat $BANNER 
-    printf  "\nBuild: %s  SingleNamespace: %s NS: <%s>\n" "$BUNDLE"  "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE"
+    printf  "\nBuild: %s SingleNamespace: %s NS: %s\n" "$BUNDLE" "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE"  
+    if [ "$KCP_MODE" == "true" ]
+    then 
+        printf  "KCP: %s Workspace: %s\n"  "$KCP_MODE"  "$WORKSPACE"
+    fi
     printf "Select apps (space to select/deselect, a for all, n for none)\n\n" 
     prompt_for_multiselect result "$PROMPT_DEMOS" "$SELECTED_DEMOS" SELECT   
     # recompute selected next loop  

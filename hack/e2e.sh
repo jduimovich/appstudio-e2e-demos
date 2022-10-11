@@ -22,6 +22,7 @@ APPNAME=$(basename $DEMODIR)
 source $SCRIPTDIR/select-ns.sh  $APPNAME
 
 echo "Installing AppName: $APPNAME"
+echo "Workspace: $WORKSPACE"  
 echo "Namespace: $NS"  
 LOG=$(basename $DEMODIR) 
 rm -rf $SCRIPTDIR/logs/$LOG
@@ -84,12 +85,20 @@ while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do
 done
 echo 
 echo "Waiting for Application: $APPNAME to be ready."
+MAX_WAIT=5
+WAIT_COUNTER=1
 while :
 do
     STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[0].status') 
     if [ "$STATUS" == "True" ]
     then 
         echo
+        break
+    fi
+    let WAIT_COUNTER++
+    if [ "$WAIT_COUNTER" == "$MAX_WAIT" ]
+    then 
+        echo "WAIT LOOP TIMEOUT - continuing ... "
         break
     fi
     echo -n .
