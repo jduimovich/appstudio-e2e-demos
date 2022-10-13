@@ -9,8 +9,9 @@ KCP_MODE=false
 fi
 if [ "$KCP_MODE" == "true" ]
 then 
-# App Studio empty, change flags later
+# App Studio so that the names for components are set to redhat server, change flags later
         APP_STUDIO=
+        USE_REDHAT_QUAY=true
         NS=$(oc project --short)
         WORKSPACE=$(kubectl ws . --short)
         SINGLE_NAMESPACE_MODE=true 
@@ -19,7 +20,7 @@ else
         WHICH_SERVER=$(oc whoami)
         APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-")
         SINGLE_NAMESPACE_MODE=false
-        SINGLE_NAMESPACE= 
+        SINGLE_NAMESPACE=  
         WORKSPACE="NOT-KCP"
         if [ -n "$APP_STUDIO" ]
         then
@@ -27,7 +28,9 @@ else
                 NS=$(oc project --short)
                 SINGLE_NAMESPACE_MODE=true
                 SINGLE_NAMESPACE=$NS
+                USE_REDHAT_QUAY=true
         else
+                USE_REDHAT_QUAY=false
                 # CRC wit HAC or not
                 oc get ns boot  >/dev/null 2>&1
                 ERR=$?  

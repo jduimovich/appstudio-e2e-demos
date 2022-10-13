@@ -49,9 +49,10 @@ else
   oc delete configmap build-pipelines-defaults -n $NS   2>/dev/null
 fi
 
-if [ -n "$APP_STUDIO" ]
+
+if [ "$USE_REDHAT_QUAY" == "true" ] 
 then
-  echo "App Studio Mode does not install secrets"
+  echo "Hosted mode (AppStudio on Sandbox or KCP) will have proper secrets installed."
 else
   kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
   ERR=$? 
@@ -112,7 +113,7 @@ do
    B=$(basename $IMG)
 # app studio format quay.io/redhat-appstudio/user-workload:NAMESPACE-COMPONENT 
 # cluster format quay.io/$MY_QUAY_USER/COMPONENT
-  if [ -n "$APP_STUDIO" ]
+  if [ "$USE_REDHAT_QUAY" == "true" ] 
   then 
     QUAY_USER=redhat-appstudio
     COMP=user-workload:$NS-$B 

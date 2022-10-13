@@ -13,7 +13,7 @@ do
     PR=$(echo "$1"  | yq e '.items['$prindex']')  
     if [  "$PR" != "null" ]
     then 
-        status=$(echo "$PR"  | yq e '.status.conditions[0].status')  
+        status=$(echo "$PR"  | yq e '.status.conditions[0].status')   
         if [ "$2" = "$status" ] 
         then
                 let COUNTER++
@@ -44,6 +44,8 @@ then
 fi  
 QUERY=$(oc get pipelineruns -o yaml  $ALL_NS)
 
+
+
 echo "Running: "
 COUNTER=0
 printPR "$QUERY" "Unknown"  
@@ -64,5 +66,12 @@ printPR "$QUERY" "False"
 echo "$COUNTER Failed Pipelines"
 echo "----------------------------------------------" 
 echo
+
+echo "Missing Status: "
+COUNTER=0
+printPR "$QUERY" "null"  
+echo "$COUNTER Pipelines missing status"
+echo "----------------------------------------------" 
+echo 
 
  

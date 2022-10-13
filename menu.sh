@@ -186,6 +186,7 @@ function prompt_for_multiselect {
 
 BUNDLE=default   
 BANNER=banner-small
+BANNER=banner
 MENU_TEXT=menu.txt  
 PROMPT_DEMOS=""
 SELECTED_DEMOS=""
@@ -294,9 +295,11 @@ until [ "${SELECT^}" == "q" ]; do
         echo
         read -n1 -p "press key to continue: "  WAIT
     fi  
-    if [ "$SELECT" = "q" ]; then 
+    if [ "$SELECT" = "q" ]; then  
+        clear 
+        cat $BANNER 
         echo 
-        echo "Exiting..."
+        echo 
         exit
     fi 
     if [ "$SELECT" = "c" ]; then 
@@ -331,5 +334,5 @@ until [ "${SELECT^}" == "q" ]; do
         echo; echo "Configure all new projects to use the default bundle"
         BUNDLE=default       
     fi 
-done  
+done 
 
