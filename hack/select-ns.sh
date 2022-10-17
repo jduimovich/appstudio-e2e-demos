@@ -1,27 +1,34 @@
 
 # quick hack, pass anything and KCP mode is false.
 # $1 is for the legacy namespace and $2 is to deselect kcp
-if [ -z "$2" ]
+kubectl get ws  >/dev/null 2>&1
+ERR=$?  
+if [ $ERR  == 0 ]
 then
-KCP_MODE=true 
-else
-KCP_MODE=false 
-fi
+        echo "KCP Mode"
+        KCP_MODE=true 
+else 
+        echo "NOT-KCP Mode" 
+        KCP_MODE=false  
+fi 
+export CURRENT_CONTEXT=$(kubectl config current-context) 
 if [ "$KCP_MODE" == "true" ]
 then 
 # App Studio so that the names for components are set to redhat server, change flags later
         APP_STUDIO=
         USE_REDHAT_QUAY=true
-        NS=$(oc project --short)
-        WORKSPACE=$(kubectl ws . --short)
+        NS=default
         SINGLE_NAMESPACE_MODE=true 
         SINGLE_NAMESPACE=$NS 
+        kubectl ws
+        kubectl ws appstudio
+        WORKSPACE=$(kubectl ws . --short)
 else
         WHICH_SERVER=$(oc whoami)
         APP_STUDIO=$(echo "$WHICH_SERVER" | grep  "appstudio-")
         SINGLE_NAMESPACE_MODE=false
         SINGLE_NAMESPACE=  
-        WORKSPACE="NOT-KCP"
+        WORKSPACE="(not-kcp)"
         if [ -n "$APP_STUDIO" ]
         then
                 echo Running in App Studio

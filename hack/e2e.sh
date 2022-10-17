@@ -41,12 +41,12 @@ fi
 if [ "$BUNDLE" = "hacbs" ]; then 
   echo
   echo "Use the HACBS pipelines in $NS"
-  oc create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
-    oc apply -n $NS -f -
+  kubectl create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
+    kubectl apply -n $NS -f -
 else 
   echo
   echo "Use the default pipelines in $NS"
-  oc delete configmap build-pipelines-defaults -n $NS   2>/dev/null
+  kubectl delete configmap build-pipelines-defaults -n $NS   2>/dev/null
 fi
 
 
@@ -61,7 +61,7 @@ else
     echo "Secret docker-registry redhat-appstudio-registry-pull-secret already exists"
   else
     echo "Install Secret for Quay.io" 
-    oc create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
+    kubectl create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
       --docker-server="https://quay.io" \
       --docker-username=$MY_QUAY_USER \
       --docker-password=$MY_QUAY_TOKEN  2>/dev/null
@@ -71,7 +71,7 @@ fi
 if [ -d "$DEMODIR/app" ] 
 then
   echo "App Definition Found, use $DEMODIR/app." 
-  oc apply -n $NS -f $DEMODIR/app  
+  kubectl apply -n $NS -f $DEMODIR/app  
   cp $DEMODIR/app/*  $SCRIPTDIR/logs/$LOG/ 
 else
 # use the directory to create an app 
@@ -151,13 +151,13 @@ do
     yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
       yq '.spec.build.containerImage="'$FULL_IMAGE'"' | \
         tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
-        oc apply -n $NS -f -
+        kubectl apply -n $NS -f -
   else
       IMAGE=$(yq '.spec.containerImage' $component)
       echo "Binary only Component,  reference image unmodified $IMAGE"
       cat $component |  
         tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
-        oc apply -n $NS -f -
+        kubectl apply -n $NS -f -
   fi
 done
 
@@ -165,7 +165,7 @@ if [ -d "$DEMODIR/scenarios" ]
 then
     echo "IntegrationTestScenarios exist with content."
     echo "Install IntegrationTestScenarios."
-    oc apply -n $NS -f $DEMODIR/scenarios
+    kubectl apply -n $NS -f $DEMODIR/scenarios
     cp $DEMODIR/scenarios/*  $SCRIPTDIR/logs/$LOG/
 else
     echo "No IntegrationTestScenarios found for $APPNAME."
@@ -182,12 +182,12 @@ then
       NM="$APPNAME-addon"
       RPATH=demos/$APPNAME/add-ons
       REPO_URL=$(git config --get remote.origin.url)
-      printf "$format\n"  $NM $NS $RPATH $REPO_URL | oc apply -f -   
+      printf "$format\n"  $NM $NS $RPATH $REPO_URL | kubectl apply -f -   
 else
     echo "No Add-ons found for $APPNAME."
 fi
  
-oc get Application $APPNAME -n $NS -o yaml 
+kubectl get Application $APPNAME -n $NS -o yaml 
 echo 
 echo "Find the yaml used here: $SCRIPTDIR/logs/$LOG/"
 ls -al $SCRIPTDIR/logs/$LOG/

@@ -42,7 +42,7 @@ if [ "$SINGLE_NAMESPACE_MODE" == true ]
 then
     ALL_NS="-n $SINGLE_NAMESPACE" 
 fi  
-QUERY=$(oc get pipelineruns -o yaml  $ALL_NS)
+QUERY=$(kubectl get pipelineruns -o yaml  $ALL_NS)
 
 
 

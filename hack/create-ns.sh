@@ -12,4 +12,4 @@ format=$(<$SCRIPTDIR/templates/namespace.yaml)
 mkdir -p $SCRIPTDIR/logs/$NS
 printf "$format\n" $NS  | \
       tee $SCRIPTDIR/logs/$NS/namespace.yaml | \
-      oc apply -f -     
+      kubectl apply -f -     

@@ -1,6 +1,6 @@
 
 
- s (status all apps, z selected only ), p (show pipelines), t (trigger webhooks), r (install selected)
- c (use appstudio context), l (use local-crc )
+ r (install selected)
+ s (status all apps, z selected only ), p (show pipelines), t (trigger webhooks) 
  h (hacbs bundle), d (default bundle)  
   

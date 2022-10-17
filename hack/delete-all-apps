@@ -7,10 +7,10 @@ do
     APP=$(basename $dir)
     if [ "$SINGLE_NAMESPACE_MODE" == true ]
     then 
-        oc delete application $APP -n $SINGLE_NAMESPACE
+        kubectl delete application $APP -n $SINGLE_NAMESPACE
     else  
-        oc delete application $APP -n $APP  
-        oc delete project $APP  
+        kubectl delete application $APP -n $APP  
+        kubectl delete project $APP  
     fi
 done
 

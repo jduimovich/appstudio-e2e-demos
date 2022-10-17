@@ -21,6 +21,6 @@ fi
 
 
 echo "Updating Component: $COMP image to: $IMG"
- oc get component $COMP $NSX -o yaml  | \
+ kubectl get component $COMP $NSX -o yaml  | \
      yq '.spec.containerImage="'$IMG'"' | \
-     oc apply $NSX -f -
+     kubectl apply $NSX -f -

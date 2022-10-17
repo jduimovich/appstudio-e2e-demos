@@ -12,6 +12,6 @@ format=$(<$SCRIPTDIR/templates/application.yaml)
 mkdir -p $SCRIPTDIR/logs/$APPNAME
 printf "$format\n" $APPNAME $APPNAME $APPNAME | \
        tee $SCRIPTDIR/logs/$APPNAME/application.yaml | \
-       oc apply -n $NS -f -   
+       kubectl apply -n $NS -f -   
   
 echo "Created Application: $APPNAME in $NS" 
