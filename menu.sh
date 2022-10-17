@@ -298,6 +298,12 @@ function prompt_for_multiselect {
     eval $lastkey='"'$keypress'"'
 }
 
+
+function showcurrentcontext {
+    printf  "\nBuild: %s SingleNamespace: %s NS: %s\n" "$BUNDLE" "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE" 
+    printf  "KCP: %s Workspace: %s Context: %s \n"  "$KCP_MODE"  "$WORKSPACE" "$CURRENT_CONTEXT"  
+
+} 
 BUNDLE=default   
 BANNER=banner
 BANNER=banner-small
@@ -317,9 +323,8 @@ ALL_CONTEXTS=$(kubectl  config get-contexts -o name | xargs -n 1 echo -n ";" | t
 ALL_CONTEXTS="${ALL_CONTEXTS:1}"
 until [ "${SELECT^}" == "q" ]; do
     clear 
-    cat $BANNER 
-    printf  "\nBuild: %s SingleNamespace: %s NS: %s\n" "$BUNDLE" "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE" 
-    printf  "KCP: %s Workspace: %s Context: %s \n"  "$KCP_MODE"  "$WORKSPACE" "$CURRENT_CONTEXT"  
+    cat $BANNER
+    showcurrentcontext
     printf "Select apps (space to select/deselect, a for all, n for none)\n\n" 
     prompt_for_multiselect result "$PROMPT_DEMOS" "$SELECTED_DEMOS" SELECT   
     # recompute selected next loop  
@@ -334,6 +339,7 @@ until [ "${SELECT^}" == "q" ]; do
     fi
     if [ "$SELECT" = "r" ]; then 
         clear 
+        showcurrentcontext   
         let SCOUNTER=1
         for selected in $result
         do  
@@ -367,6 +373,7 @@ until [ "${SELECT^}" == "q" ]; do
     #show all running, instead of selected ones
     if [ "$SELECT" = "s" ]; then  
         clear 
+        showcurrentcontext     
         echo "Show Status of All Applications"
         if [ "$SINGLE_NAMESPACE_MODE" == true ]
         then  
@@ -391,6 +398,7 @@ until [ "${SELECT^}" == "q" ]; do
     fi
     if [ "$SELECT" = "z" ]; then
         clear 
+        showcurrentcontext   
         echo "Show Status of Selected Applications"
         ANY_SELECTED=false 
         let SCOUNTER=1
@@ -417,6 +425,7 @@ until [ "${SELECT^}" == "q" ]; do
     fi 
     if [ "$SELECT" = "c" ]; then 
         clear  
+        showcurrentcontext   
         ACTIVE_CONTEXTS="${ALL_CONTEXTS/$CURRENT_CONTEXT/true}"
         echo "Choose Context - x or enter to select, any other key to return"
         prompt_for_singleselect result "$ALL_CONTEXTS" "$ACTIVE_CONTEXTS" WHICHCONTEXT   
@@ -434,6 +443,7 @@ until [ "${SELECT^}" == "q" ]; do
     fi   
     if [ "$SELECT" = "p" ]; then
         clear   
+        showcurrentcontext   
         echo "Show all pipelines"
         ./hack/ls-builds.sh 
         read -n1 -p "Press any key to continue ..."  WAIT
