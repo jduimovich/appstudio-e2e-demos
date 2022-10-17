@@ -299,8 +299,8 @@ function prompt_for_multiselect {
 }
 
 BUNDLE=default   
-BANNER=banner-small
 BANNER=banner
+BANNER=banner-small
 MENU_TEXT=menu.txt  
 PROMPT_DEMOS=""
 SELECTED_DEMOS=""
