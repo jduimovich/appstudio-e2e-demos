@@ -415,7 +415,7 @@ until [ "${SELECT^}" == "q" ]; do
         echo 
         exit
     fi 
-    if [ "$SELECT" = "k" ]; then 
+    if [ "$SELECT" = "c" ]; then 
         clear  
         ACTIVE_CONTEXTS="${ALL_CONTEXTS/$CURRENT_CONTEXT/true}"
         echo "Choose Context - x or enter to select, any other key to return"
