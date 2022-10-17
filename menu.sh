@@ -434,8 +434,7 @@ until [ "${SELECT^}" == "q" ]; do
             echo 
             echo "No context selected"   
         else
-            echo 
-            echo "Switching to context called $result"   
+            echo  
             kubectl config  use-context $result
             updateserverinfo
             read -n1 -p "press key to continue: "  WAIT

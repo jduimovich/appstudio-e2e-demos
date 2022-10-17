@@ -8,7 +8,7 @@ then
         echo "KCP Mode"
         KCP_MODE=true 
 else 
-        echo "NOT-KCP Mode" 
+        echo "Direct Cluster Mode (not-kcp)" 
         KCP_MODE=false  
 fi 
 export CURRENT_CONTEXT=$(kubectl config current-context) 
