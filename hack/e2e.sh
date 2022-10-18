@@ -11,8 +11,7 @@ fi
 if [ -z "$BUNDLE" ]
 then
       BUNDLE=default 
-fi 
-
+fi  
 
 APPNAME=$(basename $DEMODIR)   
 # depending on where you are installing the namespace is different.

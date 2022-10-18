@@ -41,12 +41,13 @@ function showappstatus() {
     printf "\nApplication: $app\n" 
     if [ -d demos/$app/components/ ]; then   
         for c in demos/$app/components/*
-        do 
-            # for speed, component name is just path
-            #NM=$(yq '.metadata.name' $c)
-            NM=$(basename $c)
+        do  
+            NM=$(yq '.metadata.name' $c) 
             REPO=$(yq '.spec.source.git.url' $c)
-            printf "\tComponent: %s @ %s\n" $NM $REPO
+            IMG=$(yq '.spec.containerImage' $c) 
+            printf "\tComponent: %s\n" $NM
+            printf "\t\tGit: %s\n" $REPO
+            printf "\t\tImage: %s\n" $IMG
         done
     else
         echo "External app to this demo, will show contents"
