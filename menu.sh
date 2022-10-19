@@ -49,8 +49,14 @@ function showappstatus() {
             printf "\t\tGit: %s\n" $REPO
             printf "\t\tImage: %s\n" $IMG
         done
-    else
-        echo "External app to this demo, will show contents"
+    else 
+        COMP=$(kubectl get components -o yaml | yq e ".items[] | select(.spec.application == \"$app\")")
+        NM=$(echo "$COMP" | yq  ".metadata.name" -) 
+        REPO=$(echo "$COMP" | yq  ".spec.source.git.url" -)
+        IMG=$(echo "$COMP" | yq '.spec.containerImage' -) 
+        printf "\tComponent: %s\n" $NM
+        printf "\t\tGit: %s\n" $REPO
+        printf "\t\tImage: %s\n" $IMG
     fi   
     GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | \
         yq '.status.devfile' | \
