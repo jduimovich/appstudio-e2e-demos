@@ -16,5 +16,4 @@ spec:
     git:
       url: https://github.com/jduimovich/actions-to-appstudio
       devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/ux-github-actions/devfiles/devfile.yaml
-  build:
-    containerImage: ghcr.io/jduimovich/ux-github-actions:latest
+ 

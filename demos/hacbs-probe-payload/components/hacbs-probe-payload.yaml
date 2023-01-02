@@ -11,6 +11,4 @@ spec:
     git:
       url: https://github.com/ralphbean/hacbs-probe-payload
       branch: build-happy-path
-  build:
-    containerImage: quay.io/rbean/hacbs-probe-payload
-
+ 

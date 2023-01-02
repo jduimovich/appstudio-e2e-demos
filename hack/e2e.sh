@@ -148,7 +148,6 @@ do
     FULL_IMAGE=quay.io/$QUAY_USER/$COMP
     echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
     yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
-      yq '.spec.build.containerImage="'$FULL_IMAGE'"' | \
         tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
         kubectl apply -n $NS -f -
   else

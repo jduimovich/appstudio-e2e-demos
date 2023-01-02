@@ -14,7 +14,5 @@ spec:
       memory: 256Mi
   source:
     git:
-      url: https://github.com/jduimovich/mongo-db-example
-  build:
-    containerImage: quay.io/jduimovich0/mongo-db-example 
+      url: https://github.com/jduimovich/mongo-db-example 
   

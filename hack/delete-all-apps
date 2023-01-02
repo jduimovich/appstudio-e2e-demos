@@ -2,16 +2,5 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source $SCRIPTDIR/select-ns.sh default  
-for dir in demos/*
-do
-    APP=$(basename $dir)
-    if [ "$SINGLE_NAMESPACE_MODE" == true ]
-    then 
-        kubectl delete application $APP -n $SINGLE_NAMESPACE
-    else  
-        kubectl delete application $APP -n $APP  
-        kubectl delete project $APP  
-    fi
-done
-
-    
+kubectl delete application -A --all
+ 

@@ -1,0 +1,17 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: map-service
+spec:
+  componentName: map-service
+  application: nyc-transit
+  containerImage: quay.io/redhat-appstudio/user-workload:jduimovich-dc-metro-map
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  source:
+    git:
+      url: https://github.com/sbose78/dc-metro-map

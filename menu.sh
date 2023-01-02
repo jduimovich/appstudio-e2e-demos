@@ -62,8 +62,7 @@ function showappstatus() {
         yq '.status.devfile' | \
         yq '.metadata.attributes' |
         grep gitOpsRepository.url | 
-        cut -d ' ' -f 2)    
-    
+        cut -d ' ' -f 2)     
     if [ "$SINGLE_NAMESPACE_MODE" == false ]
     then 
         showpipelines $NS
@@ -307,13 +306,12 @@ function prompt_for_multiselect {
 
 
 function showcurrentcontext {
-    printf  "\nBuild: %s SingleNamespace: %s NS: %s\n" "$BUNDLE" "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE" 
-    printf  "KCP: %s Workspace: %s Context: %s \n"  "$KCP_MODE"  "$WORKSPACE" "$CURRENT_CONTEXT"  
-
+    printf  "\nBuild: %s SingleNamespace: %s SNS: %s  NS: %s\n" "$BUNDLE" "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE" "$NS" 
+    printf  "Context: %s \n" "$CURRENT_CONTEXT"  
 } 
+
 BUNDLE=default   
-BANNER=banner
-BANNER=banner-small
+BANNER=banner 
 MENU_TEXT=menu.txt  
 PROMPT_DEMOS=""
 SELECTED_DEMOS=""

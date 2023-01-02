@@ -1,0 +1,12 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: service-provider-integration-oauth
+spec:
+  componentName: service-provider-integration-oauth
+  application: alpo-studio
+  containerImage: quay.io/redhat-appstudio/user-workload:jduimovich-service-provider-integration-oauth
+  source:
+    git:
+      url: https://github.com/redhat-appstudio/service-provider-integration-oauth
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/alpo-studio/devfiles/service-provider-integration-oauth/devfile.yaml

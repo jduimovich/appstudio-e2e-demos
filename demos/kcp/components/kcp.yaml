@@ -10,6 +10,4 @@ spec:
     git:
       url: https://github.com/kcp-dev/kcp
       devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/kcp/devfiles/devfile.yaml
-  build:
-    containerImage: quay.io/jduimovich0/kcp
-
+ 

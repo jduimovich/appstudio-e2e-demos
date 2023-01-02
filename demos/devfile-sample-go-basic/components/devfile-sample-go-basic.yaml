@@ -9,7 +9,5 @@ spec:
   targetPort: 8081
   source:
     git:
-      url: https://github.com/devfile-samples/devfile-sample-go-basic 
-  build:
-    containerImage: quay.io/jduimovich0/devfile-sample-go-basic
+      url: https://github.com/devfile-samples/devfile-sample-go-basic  
   

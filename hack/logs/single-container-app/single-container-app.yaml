@@ -1,0 +1,18 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: single-container-app
+spec:
+  componentName: single-container-app
+  application: single-container-app
+  containerImage: quay.io/jduimovich0/single-container-app
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  source:
+    git:
+      url: https://github.com/jduimovich/single-container-app
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/single-container-app/devfiles/devfile.yaml

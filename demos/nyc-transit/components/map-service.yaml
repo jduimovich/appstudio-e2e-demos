@@ -15,6 +15,4 @@ spec:
   source:
     git:
       url: https://github.com/sbose78/dc-metro-map
-  build:
-    containerImage: quay.io/jduimovich0/dc-metro-map
-  
+ 
