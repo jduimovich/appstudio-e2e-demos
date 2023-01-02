@@ -5,7 +5,7 @@ metadata:
 spec:
   componentName: fib-go
   application: graphtuitous
-  containerImage: quay.io/redhat-appstudio/user-workload:jduimovich-fib-go
+  containerImage: quay.io/jduimovich0/fib-go
   targetPort: 8080
   replicas: 1
   resources:

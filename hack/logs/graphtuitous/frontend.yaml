@@ -5,7 +5,7 @@ metadata:
 spec:
   componentName: frontend
   application: graphtuitous
-  containerImage: quay.io/redhat-appstudio/user-workload:jduimovich-frontend
+  containerImage: quay.io/jduimovich0/frontend
   targetPort: 8080
   replicas: 1
   resources:

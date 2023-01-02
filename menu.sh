@@ -33,11 +33,7 @@ function showroutes() {
 
 function showappstatus() {
     app=$1 
-    NS=$2
-    if [ "$SINGLE_NAMESPACE_MODE" == true ]
-    then
-        NS=$SINGLE_NAMESPACE 
-    fi   
+    NS=$2 
     printf "\nApplication: $app\n" 
     if [ -d demos/$app/components/ ]; then   
         for c in demos/$app/components/*
@@ -63,11 +59,7 @@ function showappstatus() {
         yq '.metadata.attributes' |
         grep gitOpsRepository.url | 
         cut -d ' ' -f 2)     
-    if [ "$SINGLE_NAMESPACE_MODE" == false ]
-    then 
-        showpipelines $NS
-        showroutes $NS
-    fi  
+
     printf "\tGitops Repo: %s\n" "$GOPS"
     printf " " 
 
@@ -306,8 +298,7 @@ function prompt_for_multiselect {
 
 
 function showcurrentcontext {
-    printf  "\nBuild: %s SingleNamespace: %s SNS: %s  NS: %s\n" "$BUNDLE" "$SINGLE_NAMESPACE_MODE" "$SINGLE_NAMESPACE" "$NS" 
-    printf  "Context: %s \n" "$CURRENT_CONTEXT"  
+    printf  "\nBuild: %s NS: %s Context: %s\n" "$BUNDLE" "$NS" "$CURRENT_CONTEXT"   
 } 
 
 BUNDLE=default   
@@ -348,8 +339,7 @@ until [ "${SELECT^}" == "q" ]; do
         let SCOUNTER=1
         for selected in $result
         do  
-            if [ "$selected" = "true" ]; then 
-                echo "Installing ${DEMOS[$SCOUNTER]} "
+            if [ "$selected" = "true" ]; then  
                 ./hack/e2e.sh demos/${DEMOS[$SCOUNTER]} $BUNDLE  
             fi
             let SCOUNTER++
@@ -357,48 +347,24 @@ until [ "${SELECT^}" == "q" ]; do
         read -n1 -p "press key to continue: "  WAIT
     fi     
     if [ "$SELECT" = "t" ]; then  
-        clear  
-        if [ "$SINGLE_NAMESPACE_MODE" == true ]
-        then 
-            # one namespace, so build all in that one only
-            ./hack/build-all.sh $SINGLE_NAMESPACE
-        else
-            let SCOUNTER=1
-            for selected in $result
-            do  
-                if [ "$selected" = "true" ]; then 
-                    echo "Trigger Pipeline in ${DEMOS[$SCOUNTER]} "
-                    ./hack/build-all.sh ${DEMOS[$SCOUNTER]} 
-                fi
-                let SCOUNTER++
-            done 
-        fi         
+        clear   
+        ./hack/build-all.sh $NS 
         read -n1 -p "press key to continue: "  WAIT
     fi 
     #show all running, instead of selected ones
     if [ "$SELECT" = "s" ]; then  
         clear 
         showcurrentcontext     
-        echo "Show Status of All Applications"
-        if [ "$SINGLE_NAMESPACE_MODE" == true ]
-        then  
-            ALL_NS="-n $SINGLE_NAMESPACE"
-        else
-            ALL_NS="--all-namespaces"
-        fi  
-        KEYS=$(kubectl get  application.appstudio.redhat.com -o yaml $ALL_NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
+        echo "Show Status of All Applications"  
+        KEYS=$(kubectl get  application.appstudio.redhat.com -o yaml -n $NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
         echo 
         for app in $KEYS
         do   
-            showappstatus $app $app
-        done  
-        if [ "$SINGLE_NAMESPACE_MODE" == true ]
-        then 
-            echo
-            echo "Single Namespace:" 
-            showpipelines $NS
-            showroutes $NS
-        fi  
+            showappstatus $app $NS
+        done   
+        echo 
+        showpipelines $NS
+        showroutes $NS 
         read -n1 -p "press key to continue: "  WAIT
     fi
     if [ "$SELECT" = "z" ]; then
@@ -411,7 +377,7 @@ until [ "${SELECT^}" == "q" ]; do
         do   
             if [ "$selected" = "true" ]; then 
                 ANY_SELECTED=true  
-                showappstatus ${DEMOS[$SCOUNTER]} ${DEMOS[$SCOUNTER]}
+                showappstatus ${DEMOS[$SCOUNTER]} $NS
             fi
             let SCOUNTER++
         done   

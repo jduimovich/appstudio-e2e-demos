@@ -20,9 +20,7 @@ APPNAME=$(basename $DEMODIR)
 # crc with hac is a single namespace (for now)
 source $SCRIPTDIR/select-ns.sh  $APPNAME
 
-echo "Installing AppName: $APPNAME"
-echo "Workspace: $WORKSPACE"  
-echo "Namespace: $NS"  
+echo "Installing AppName: $APPNAME into namespace: $NS"  
 LOG=$(basename $DEMODIR) 
 rm -rf $SCRIPTDIR/logs/$LOG
 mkdir -p $SCRIPTDIR/logs/$LOG
@@ -30,11 +28,9 @@ echo "Log: $SCRIPTDIR/logs/$LOG"
 
 kubectl get ns $NS &> /dev/null
 ERR=$? 
-if [  "$ERR" == "0" ]
-then
-  echo "Namespace $NS already exists"
-else
-$SCRIPTDIR/create-ns.sh $NS
+if [  "$ERR" != "0" ]
+then 
+  $SCRIPTDIR/create-ns.sh $NS
 fi
 
 if [ "$BUNDLE" = "hacbs" ]; then 
@@ -48,7 +44,6 @@ else
   kubectl delete configmap build-pipelines-defaults -n $NS   2>/dev/null
 fi
 
-
 if [ "$USE_REDHAT_QUAY" == "true" ] 
 then
   echo "Hosted mode (AppStudio on Sandbox or KCP) will have proper secrets installed."
@@ -59,7 +54,7 @@ else
   then
     echo "Secret docker-registry redhat-appstudio-registry-pull-secret already exists"
   else
-    echo "Install Secret for Quay.io" 
+    echo "Install Secret for user $MY_QUAY_USER in Quay.io" 
     kubectl create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
       --docker-server="https://quay.io" \
       --docker-username=$MY_QUAY_USER \
@@ -76,9 +71,7 @@ else
 # use the directory to create an app 
   $SCRIPTDIR/create-app.sh $APPNAME $NS
 fi
- 
-echo
-echo "Creating Application: $APPNAME"
+  
 while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do
   echo -n . 
   sleep 1
@@ -184,8 +177,7 @@ then
 else
     echo "No Add-ons found for $APPNAME."
 fi
- 
-kubectl get Application $APPNAME -n $NS -o yaml 
+  
 echo 
 echo "Find the yaml used here: $SCRIPTDIR/logs/$LOG/"
 ls -al $SCRIPTDIR/logs/$LOG/

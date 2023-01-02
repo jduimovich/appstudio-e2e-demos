@@ -36,14 +36,8 @@ do
 done    
 }
 
-source $SCRIPTDIR/select-ns.sh default    
-ALL_NS="--all-namespaces"
-if [ "$SINGLE_NAMESPACE_MODE" == true ]
-then
-    ALL_NS="-n $SINGLE_NAMESPACE" 
-fi  
-QUERY=$(kubectl get pipelineruns -o yaml  $ALL_NS)
-
+source $SCRIPTDIR/select-ns.sh default     
+QUERY=$(kubectl get pipelineruns -o yaml -n "$NS")
 
 
 echo "Running: "

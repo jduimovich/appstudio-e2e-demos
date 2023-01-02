@@ -5,7 +5,7 @@ metadata:
 spec:
   componentName: fib-node
   application: graphtuitous
-  containerImage: quay.io/redhat-appstudio/user-workload:jduimovich-fib-node
+  containerImage: quay.io/jduimovich0/fib-node
   targetPort: 8080
   replicas: 1
   resources:
