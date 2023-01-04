@@ -4,7 +4,7 @@ metadata:
   name: map-service
 spec:
   componentName: map-service
-  application: nyc-transit
+  application: dc-metro-map
   containerImage: quay.io/jduimovich0/dc-metro-map
   targetPort: 8080
   replicas: 1

@@ -20,8 +20,8 @@ Note: As per the infra-deployments examples, you need to set `MY_QUAY_USER` and 
 Demos can be added in the subdirectory called demos in a structure like the following.
 
 ```
-tree demos/nyc-transit/
-demos/nyc-transit/
+tree demos/dc-metro-map/
+demos/dc-metro-map/
 ├── add-ons
 │   ├── billing-service
 │   │   ├── route.yaml

@@ -1,7 +1,7 @@
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Application
 metadata:
-  name: nyc-transit 
+  name: dc-metro-map 
 spec:
-  description: "nyc-transit built in App Studio"
-  displayName: nyc-transit
+  description: "dc-metro-map built in App Studio"
+  displayName: dc-metro-map
