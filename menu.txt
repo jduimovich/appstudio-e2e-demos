@@ -1,6 +1,6 @@
 
 
  r (install selected)
- s (status all apps, z selected), p (pipelines), t (webhooks) 
+ s (status all apps), p (pipelines), t (webhooks) 
  h (hacbs bundle), d (default bundle)  
   

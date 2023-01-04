@@ -359,27 +359,7 @@ until [ "${SELECT^}" == "q" ]; do
         showpipelines $NS
         showroutes $NS 
         read -n1 -p "press key to continue: "  WAIT
-    fi
-    if [ "$SELECT" = "z" ]; then
-        clear 
-        showcurrentcontext   
-        echo "Show Status of Selected Applications"
-        ANY_SELECTED=false 
-        let SCOUNTER=1
-        for selected in $result
-        do   
-            if [ "$selected" = "true" ]; then 
-                ANY_SELECTED=true  
-                showappstatus ${DEMOS[$SCOUNTER]} $NS
-            fi
-            let SCOUNTER++
-        done   
-        if [ "$ANY_SELECTED" = "false" ]; then 
-            echo "Nothing was selected, no status displayed"
-        fi
-        echo
-        read -n1 -p "press key to continue: "  WAIT
-    fi  
+    fi 
     if [ "$SELECT" = "q" ]; then  
         clear 
         cat $BANNER 
