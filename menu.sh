@@ -326,13 +326,6 @@ until [ "${SELECT^}" == "q" ]; do
     # recompute selected next loop  
     SELECTED_DEMOS=${result// /;} 
 
-    if [ "$SELECT" = "a" ]; then 
-        echo; echo "Running All" 
-        for key in $(seq $COUNTER)
-        do   
-            ./hack/e2e.sh demos/${DEMOS[$key]} $BUNDLE
-        done 
-    fi
     if [ "$SELECT" = "r" ]; then 
         clear 
         showcurrentcontext   
