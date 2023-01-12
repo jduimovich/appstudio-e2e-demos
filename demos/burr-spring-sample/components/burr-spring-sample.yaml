@@ -1,0 +1,15 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: burr-spring-sample
+spec:
+  componentName: burr-spring-sample
+  application: burr-spring-sample
+  containerImage: quay.io/jduimovich0/burr-spring-sample
+  source:
+    git:
+      url: https://github.com/samburrai/java-springboot-hello
+      revision: main
+      devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-java-springboot-basic/main/devfile.yaml
+
+ 

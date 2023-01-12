@@ -1,7 +1,0 @@
-apiVersion: appstudio.redhat.com/v1alpha1
-kind: Application
-metadata:
-  name: alpo-studio
-spec:
-  description: "App Studio (alpo-studio) built in App Studio"
-  displayName: alpo-studio

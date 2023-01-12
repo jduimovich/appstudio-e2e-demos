@@ -1,24 +1,8 @@
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Environment
-metadata:
-  creationTimestamp: "2022-09-01T14:25:04Z"
-  generation: 1
-  managedFields:
-  - apiVersion: appstudio.redhat.com/v1alpha1
-    fieldsType: FieldsV1
-    fieldsV1:
-      f:spec:
-        .: {}
-        f:deploymentStrategy: {}
-        f:displayName: {}
-        f:type: {}
-    manager: Mozilla
-    operation: Update
-    time: "2022-09-01T14:25:04Z"
+metadata: 
   name: dev
-  namespace: jduimovich
-  resourceVersion: "1030704497"
-  uid: 7413efd5-aa1b-46e1-9b7e-f30f8152abf8
+  namespace: jduimovich  
 spec:
   deploymentStrategy: AppStudioAutomated
   displayName: dev

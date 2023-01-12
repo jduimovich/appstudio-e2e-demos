@@ -4,9 +4,9 @@ metadata:
   name: managed-gitops
 spec:
   componentName: managed-gitops
-  application: alpo-studio
+  application: dogfood-builds
   containerImage: quay.io/redhat-appstudio/user-workload:jduimovich-managed-gitops
   source:
     git:
       url: https://github.com/redhat-appstudio/managed-gitops
-      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/alpo-studio/devfiles/managed-gitops/devfile.yaml
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/dogfood-builds/devfiles/managed-gitops/devfile.yaml

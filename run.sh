@@ -1,2 +1,2 @@
 
-./menu.sh
+./menu.sh demo

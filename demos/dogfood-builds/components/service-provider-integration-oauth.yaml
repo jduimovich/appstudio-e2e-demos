@@ -4,10 +4,10 @@ metadata:
   name: service-provider-integration-oauth
 spec:
   componentName: service-provider-integration-oauth
-  application: alpo-studio
+  application: dogfood-builds
   containerImage: quay.io/jduimovich0/service-provider-integration-oauth
   source:
     git:
       url: https://github.com/redhat-appstudio/service-provider-integration-oauth
-      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/alpo-studio/devfiles/service-provider-integration-oauth/devfile.yaml
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/dogfood-builds/devfiles/service-provider-integration-oauth/devfile.yaml
  
