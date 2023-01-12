@@ -10,6 +10,6 @@ spec:
     git:
       url: https://github.com/samburrai/java-springboot-hello
       revision: main
-      devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-java-springboot-basic/main/devfile.yaml
-
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/burr-spring-sample/devfiles/devfile.yaml
+       
  
