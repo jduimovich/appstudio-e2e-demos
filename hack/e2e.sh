@@ -8,30 +8,16 @@ then
       exit -1 
 fi 
 
-APPNAME=$(basename $DEMODIR)   
-# depending on where you are installing the namespace is different.
-# app studio fixes it as your user name
-# crc is per namespace because we can :) 
-# crc with hac is a single namespace (for now)
-source $SCRIPTDIR/select-ns.sh  $APPNAME
-
+APPNAME=$(basename $DEMODIR)    
+source $SCRIPTDIR/select-ns.sh $APPNAME 
 echo "Installing AppName: $APPNAME into namespace: $NS"  
 LOG=$(basename $DEMODIR) 
 rm -rf $SCRIPTDIR/logs/$LOG
 mkdir -p $SCRIPTDIR/logs/$LOG
 echo "Log: $SCRIPTDIR/logs/$LOG" 
 
-kubectl get ns $NS &> /dev/null
-ERR=$? 
-if [  "$ERR" != "0" ]
+if [ "$USE_REDHAT_QUAY" != "true" ] 
 then 
-  $SCRIPTDIR/create-ns.sh $NS
-fi 
-
-if [ "$USE_REDHAT_QUAY" == "true" ] 
-then
-  echo "Hosted mode (AppStudio on Sandbox or KCP) will have proper secrets installed."
-else
   kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
   ERR=$? 
   if [  "$ERR" == "0" ]
@@ -51,13 +37,10 @@ then
   echo "App Definition Found, use $DEMODIR/app." 
   kubectl apply -n $NS -f $DEMODIR/app  
   cp $DEMODIR/app/*  $SCRIPTDIR/logs/$LOG/ 
-else
-# use the directory to create an app 
+else 
   $SCRIPTDIR/create-app.sh $APPNAME $NS
-fi
-  
-while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do
-  echo -n . 
+fi 
+while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do 
   sleep 1
 done
 echo 

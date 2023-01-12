@@ -1,3 +1,5 @@
+#!/bin/bash
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 
 export CURRENT_CONTEXT=$(kubectl config current-context)  
@@ -9,8 +11,7 @@ if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then
         ERR=$? 
         if [  "$ERR" != "0" ]
         then 
-                echo $ERR
-                oc new-project $NS
+                $SCRIPTDIR/create-ns.sh $NS 
         fi 
 else 
         #echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"

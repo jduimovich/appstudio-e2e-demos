@@ -54,11 +54,9 @@ function showappstatus() {
             NM=$(echo "$COMPONENT" | yq  ".metadata.name" -) 
             REPO=$(echo "$COMPONENT" | yq  ".spec.source.git.url" -)
             IMG=$(echo "$COMPONENT" | yq '.spec.containerImage' -) 
-            printf "\tComponent: %s\n" $NM
-            printf "\t\tGit: %s\n" $REPO
-            printf "\t\tImage: %s\n" $IMG 
-            GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | \
-                yq '.status.devfile' | \
+            printf "\tComponent: %s\n\t\tGit: %s\n\t\tImage: %s\n" $NM  $REPO $IMG  
+            GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | 
+                yq '.status.devfile' |
                 yq '.metadata.attributes' |
                 grep gitOpsRepository.url | 
                 cut -d ' ' -f 2)      
