@@ -14,285 +14,67 @@ echo "$COUNTER demos found."
 function updateserverinfo() {
     source ./hack/select-ns.sh default  
 }
+
+# utilities (verbose) for menus, keep separate.
+source hack/utils-for-menu.sh
   
 function showroutes() { 
-    printf "Routes:\n"   
+    printf "\nRoutes:\n"   
     NS=$1  
     kubectl get routes -n $NS  -o yaml  2>/dev/null | 
         yq '.items[].spec.host | select(. != "el*")' |  
         xargs -n 1 printf "\tRoute: https://%s\n"
 }
 
+
+function showallappstatus() {
+    ALL_APPS=$(kubectl get  application.appstudio.redhat.com -o yaml -n $NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
+    echo 
+    for app in $ALL_APPS
+    do   
+        showappstatus $app $NS
+    done   
+}
+
 function showappstatus() {
     app=$1 
     NS=$2 
-    printf "\nApplication: $app\n" 
-    if [ -d demos/$app/components/ ]; then   
-        for c in demos/$app/components/*
-        do  
-            NM=$(yq '.metadata.name' $c) 
-            REPO=$(yq '.spec.source.git.url' $c)
-            IMG=$(yq '.spec.containerImage' $c) 
-            printf "\tComponent: %s\n" $NM
-            printf "\t\tGit: %s\n" $REPO
-            printf "\t\tImage: %s\n" $IMG
-        done
-    else 
-        COMP=$(kubectl get components -o yaml | yq e ".items[] | select(.spec.application == \"$app\")")
-        NM=$(echo "$COMP" | yq  ".metadata.name" -) 
-        REPO=$(echo "$COMP" | yq  ".spec.source.git.url" -)
-        IMG=$(echo "$COMP" | yq '.spec.containerImage' -) 
-        printf "\tComponent: %s\n" $NM
-        printf "\t\tGit: %s\n" $REPO
-        printf "\t\tImage: %s\n" $IMG
-    fi   
-    GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | \
-        yq '.status.devfile' | \
-        yq '.metadata.attributes' |
-        grep gitOpsRepository.url | 
-        cut -d ' ' -f 2)     
-
-    printf "\tGitops Repo: %s\n" "$GOPS"
-    printf " " 
-
-}
-
-updateserverinfo   
-
-
-function prompt_for_singleselect { 
-    # little helpers for terminal print control and key input
-    ESC=$( printf "\033")
-    cursor_blink_on()   { printf "$ESC[?25h"; }
-    cursor_blink_off()  { printf "$ESC[?25l"; }
-    cursor_to()         { printf "$ESC[$1;${2:-1}H"; }
-    print_inactive()    { printf "$2   $1 "; }
-    print_active()      { printf "$2  $ESC[7m $1 $ESC[27m"; }
-    get_cursor_row()    { IFS=';' read -sdR -p $'\E[6n' ROW COL; echo ${ROW#*[}; }
-    key_input()         {
-      local key
-      IFS= read -rsn1 key 2>/dev/null >&2 
- 
-      if [[ $key = ""      ]]; then echo enter; return ; fi;
-      if [[ $key = $'\x20' ]]; then echo space; return ; fi;
-      if [[ $key = $'\x1b' ]]; then
-        read -rsn2 key
-        if [[ $key = [A ]]; then echo up;   return ;  fi;
-        if [[ $key = [B ]]; then echo down; return ;  fi;
-      fi 
-      echo $key
-    }   
-    select_none()    {  
-      local arr_name=$1
-      eval "local arr=(\"\${${arr_name}[@]}\")"
-      for option in "${!options[@]}"; do
-        arr[option]=false
-      done  
-      eval $arr_name='("${arr[@]}")'
-    }
-    local retval=$1
-    local lastkey=$4
-    local options
-    local defaults
-
-    IFS=';' read -r -a options <<< "$2"
-    if [[ -z $3 ]]; then
-      defaults=()
-    else
-      IFS=';' read -r -a defaults <<< "$3"
-    fi
-    local selected=() 
-    local selectedOption="none";
-    for ((i=0; i<${#options[@]}; i++)); do
-      selected+=("${defaults[i]}")
-      printf "\n"
-    done
-
-    # determine current screen position for overwriting the options
-    local lastrow=`get_cursor_row`
-    local startrow=$(($lastrow - ${#options[@]}))
-
-    # ensure cursor and input echoing back on upon a ctrl+c during read -s
-    trap "cursor_blink_on; stty echo; printf '\n'; exit" 2
-    cursor_blink_off
-
-    local active=0
-    while true; do
-        # print options by overwriting the last lines
-        local idx=0
-        for option in "${options[@]}"; do
-            local prefix=" "
-            if [[ ${selected[idx]} == true ]]; then
-              prefix=">" 
-            fi
-
-            cursor_to $(($startrow + $idx))
-            if [ $idx -eq $active ]; then
-                print_active "$option" "$prefix"
-            else
-                print_inactive "$option" "$prefix"
-            fi
-            ((idx++))
-        done
-        echo 
-        echo "Enter or Space to Select, any other key to return with no changes"
-        if [ "$selectedOption" != "none" ]; then 
-            sleep 1
+    printf "\nApplication: $app\n"   
+    COMPONENTS=$(kubectl get components -o yaml) 
+    for COMPONENT_INDEX in {0..32}   
+    do
+        COMPONENT=$(echo "$COMPONENTS" | yq  ".items[$COMPONENT_INDEX]" -)  
+        if [ "$COMPONENT" == "null" ] 
+        then
             break
         fi
-        # user key control
-        keypress=`key_input` 
-        case $keypress in 
-            space)  select_none selected;
-                    selected[$active]=true;
-                    selectedOption=${options[$active]} ;;
-            enter)  select_none selected;
-                    selected[$active]=true;
-                    selectedOption=${options[$active]} ;; 
-            up)     ((active--));
-                    if [ $active -lt 0 ]; then active=$((${#options[@]} - 1)); fi;;
-            down)   ((active++));
-                    if [ $active -ge ${#options[@]} ]; then active=0; fi;;
-            *)      break;;
-        esac
-    done
-
-    # cursor position back to normal
-    cursor_to $lastrow
-    printf "\n"
-    cursor_blink_on
-   
-    eval $retval='"'$selectedOption'"'
-    eval $lastkey='"'$keypress'"'  
+        APPNAME=$(echo "$COMPONENT" | yq  ".spec.application" -) 
+        if [ $APPNAME == "$app" ] 
+        then
+            NM=$(echo "$COMPONENT" | yq  ".metadata.name" -) 
+            REPO=$(echo "$COMPONENT" | yq  ".spec.source.git.url" -)
+            IMG=$(echo "$COMPONENT" | yq '.spec.containerImage' -) 
+            printf "\tComponent: %s\n" $NM
+            printf "\t\tGit: %s\n" $REPO
+            printf "\t\tImage: %s\n" $IMG 
+            GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | \
+                yq '.status.devfile' | \
+                yq '.metadata.attributes' |
+                grep gitOpsRepository.url | 
+                cut -d ' ' -f 2)      
+        fi  
+    done  
+    printf "\tGitops Repo: %s\n" "$GOPS"
+    printf " "  
 }
-
-function prompt_for_multiselect {
-
-    # little helpers for terminal print control and key input
-    ESC=$( printf "\033")
-    cursor_blink_on()   { printf "$ESC[?25h"; }
-    cursor_blink_off()  { printf "$ESC[?25l"; }
-    cursor_to()         { printf "$ESC[$1;${2:-1}H"; }
-    print_inactive()    { printf "$2   $1 "; }
-    print_active()      { printf "$2  $ESC[7m $1 $ESC[27m"; }
-    get_cursor_row()    { IFS=';' read -sdR -p $'\E[6n' ROW COL; echo ${ROW#*[}; }
-    key_input()         {
-      local key
-      IFS= read -rsn1 key 2>/dev/null >&2 
  
-      if [[ $key = ""      ]]; then echo enter; return ; fi;
-      if [[ $key = $'\x20' ]]; then echo space; return ; fi;
-      if [[ $key = $'\x1b' ]]; then
-        read -rsn2 key
-        if [[ $key = [A ]]; then echo up;   return ;  fi;
-        if [[ $key = [B ]]; then echo down; return ;  fi;
-      fi 
-      echo $key
-    }
-    select_all()    {  
-      local arr_name=$1
-      eval "local arr=(\"\${${arr_name}[@]}\")"
-      for option in "${!options[@]}"; do
-        arr[option]=true
-      done  
-      eval $arr_name='("${arr[@]}")'
-    }
-    select_none()    {  
-      local arr_name=$1
-      eval "local arr=(\"\${${arr_name}[@]}\")"
-      for option in "${!options[@]}"; do
-        arr[option]=false
-      done  
-      eval $arr_name='("${arr[@]}")'
-    }
-
-    toggle_option()    {
-      local arr_name=$1
-      eval "local arr=(\"\${${arr_name}[@]}\")"
-      local option=$2
-      if [[ ${arr[option]} == true ]]; then
-        arr[option]=false
-      else
-        arr[option]=true
-      fi
-      eval $arr_name='("${arr[@]}")'
-    }
-
-    local retval=$1
-    local lastkey=$4
-    local options
-    local defaults
-
-    IFS=';' read -r -a options <<< "$2"
-    if [[ -z $3 ]]; then
-      defaults=()
-    else
-      IFS=';' read -r -a defaults <<< "$3"
-    fi
-    local selected=()
-
-    for ((i=0; i<${#options[@]}; i++)); do
-      selected+=("${defaults[i]}")
-      printf "\n"
-    done
-
-    # determine current screen position for overwriting the options
-    local lastrow=`get_cursor_row`
-    local startrow=$(($lastrow - ${#options[@]}))
-
-    # ensure cursor and input echoing back on upon a ctrl+c during read -s
-    trap "cursor_blink_on; stty echo; printf '\n'; exit" 2
-    cursor_blink_off
-
-    local active=0
-    while true; do
-        # print options by overwriting the last lines
-        local idx=0
-        for option in "${options[@]}"; do
-            local prefix="[ ]"
-            if [[ ${selected[idx]} == true ]]; then
-              prefix="[x]"
-            fi
-
-            cursor_to $(($startrow + $idx))
-            if [ $idx -eq $active ]; then
-                print_active "$option" "$prefix"
-            else
-                print_inactive "$option" "$prefix"
-            fi
-            ((idx++))
-        done
-        cat $MENU_TEXT
-
-        # user key control
-        keypress=`key_input` 
-        case $keypress in
-            "a")    select_all selected;;
-            "n")    select_none selected;; 
-            space)  toggle_option selected $active;;
-            enter)  break;;
-            up)     ((active--));
-                    if [ $active -lt 0 ]; then active=$((${#options[@]} - 1)); fi;;
-            down)   ((active++));
-                    if [ $active -ge ${#options[@]} ]; then active=0; fi;;
-            *)      break;;
-        esac
-    done
-
-    # cursor position back to normal
-    cursor_to $lastrow
-    printf "\n"
-    cursor_blink_on
-   
-    eval $retval='"'${selected[@]}'"'
-    eval $lastkey='"'$keypress'"'
-}
-
-
 function showcurrentcontext {
-    printf  "\nNS: %s Context: %s\n"  "$NS" "$CURRENT_CONTEXT"   
+    printf  "\nContext: %s NS: %s\n"  "$CURRENT_CONTEXT" "$NS" 
 } 
- 
+  
+# init and compute menu options
+updateserverinfo   
+
 BANNER=banner 
 MENU_TEXT=menu.txt  
 PROMPT_DEMOS=""
@@ -307,7 +89,8 @@ do
     let SCOUNTER++
 done    
 ALL_CONTEXTS=$(kubectl  config get-contexts -o name | xargs -n 1 echo -n ";" | tr -d " ")
-ALL_CONTEXTS="${ALL_CONTEXTS:1}"
+ALL_CONTEXTS="${ALL_CONTEXTS:1}" 
+
 until [ "${SELECT^}" == "q" ]; do
     clear 
     cat $BANNER
@@ -315,9 +98,8 @@ until [ "${SELECT^}" == "q" ]; do
     printf "Select apps (space to select/deselect, a for all, n for none)\n\n" 
     prompt_for_multiselect result "$PROMPT_DEMOS" "$SELECTED_DEMOS" SELECT   
     # recompute selected next loop  
-    SELECTED_DEMOS=${result// /;} 
-
-    if [ "$SELECT" = "r" ]; then 
+    SELECTED_DEMOS=${result// /;}  
+    if [ "$SELECT" = "i" ]; then 
         clear 
         showcurrentcontext   
         let SCOUNTER=1
@@ -338,15 +120,14 @@ until [ "${SELECT^}" == "q" ]; do
     #show all running, instead of selected ones
     if [ "$SELECT" = "s" ]; then  
         clear 
-        showcurrentcontext     
-        echo "Show Status of All Applications"  
-        KEYS=$(kubectl get  application.appstudio.redhat.com -o yaml -n $NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
-        echo 
-        for app in $KEYS
-        do   
-            showappstatus $app $NS
-        done   
-        echo 
+        echo "Applications" 
+        showcurrentcontext      
+        showallappstatus 
+        showroutes $NS 
+        read -n1 -p "press key to continue: "  WAIT
+    fi 
+    if [ "$SELECT" = "r" ]; then  
+        clear  
         showroutes $NS 
         read -n1 -p "press key to continue: "  WAIT
     fi 
@@ -375,11 +156,63 @@ until [ "${SELECT^}" == "q" ]; do
         fi 
     fi   
     if [ "$SELECT" = "p" ]; then
+      WAIT="p"
+      FULLPAGE=$(mktemp)
+      LOOPCOUNT=0
+      clear   
+      echo "computing ..." 
+      until [ "$WAIT" == "q" ]; do  
+        ./hack/ls-builds.sh > $FULLPAGE
+        let LOOPCOUNT++
         clear   
         showcurrentcontext   
-        echo "Show all pipelines"
-        ./hack/ls-builds.sh 
+        echo "Show all pipelines:", $(date)
+        cat $FULLPAGE
+        read -n1 -t 1 -p "$LOOPCOUNT: will continue looping, press q to stop ..."  WAIT 
+        if [ "$WAIT" != "q" ]; then
+          echo "refreshing ..."
+        fi
+      done 
+    fi 
+    if [ "$SELECT" = "x" ]; then
+        clear   
+        printf  "\n\nWARNING WARNING WARNING"
+        read -n1 -p "PRUNING COMPLETED PIPELINES PRESS y, other key to skip: "  WAIT
+        echo 
+        if [ "$WAIT" = "y" ]; then
+          printf  "\n\nPRUNE COMPLETED PIPELINES \n\n" 
+          ./hack/prune-completed-pipelines.sh 
+          printf  "\n\nDONE \n\n" 
+        fi  
         read -n1 -p "Press any key to continue ..."  WAIT
     fi 
+
+      if [ "$SELECT" = "z" ]; then 
+        clear 
+        showcurrentcontext   
+        let SCOUNTER=1
+        echo "Selected Apps to Delete:"
+        for selected in $result
+        do  
+            if [ "$selected" = "true" ]; then  
+                echo ${DEMOS[$SCOUNTER]} 
+            fi
+            let SCOUNTER++
+        done
+        read -n1 -p "Deleting above Applications!!! PRESS y, other key to skip: "  WAIT
+        echo
+        if [ "$WAIT" = "y" ]; then
+          let SCOUNTER=1
+          for selected in $result
+          do  
+              if [ "$selected" = "true" ]; then  
+                  kubectl delete application ${DEMOS[$SCOUNTER]} -n $NS
+              fi
+              let SCOUNTER++
+          done
+          read -n1 -p "press key to continue: "  WAIT
+        fi
+      fi      
+
 done 
 

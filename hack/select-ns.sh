@@ -3,13 +3,13 @@
 export CURRENT_CONTEXT=$(kubectl config current-context)  
 if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then  
         #echo "Running private version of App Studio using personal user for Quay"  
-        NS=rockbroth   
+        NS=personal-backend   
         USE_REDHAT_QUAY=false 
         kubectl get ns $NS &> /dev/null
         ERR=$? 
         if [  "$ERR" != "0" ]
         then 
-        echo $ERR
+                echo $ERR
                 oc new-project $NS
         fi 
 else 

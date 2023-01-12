@@ -5,9 +5,9 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 B=$(mktemp)
 M=$(mktemp)
-R=$(mktemp)
-COUNTER=0
-function printPR() {   
+R=$(mktemp) 
+function printPR() {  
+COUNTER=0 
 for prindex in {0..100}
 do   
     PR=$(echo "$1"  | yq e '.items['$prindex']')  
@@ -16,6 +16,7 @@ do
         status=$(echo "$PR"  | yq e '.status.conditions[0].status')   
         if [ "$2" = "$status" ] 
         then
+                if [ $COUNTER == 0 ] ; then echo $3; fi
                 let COUNTER++
                 echo "$PR"  | yq e '.metadata.name' > $B &
                 echo "$PR"  | yq e '.status.conditions[0].message' > $M &
@@ -34,38 +35,19 @@ do
          break
     fi 
 done    
+if [ $COUNTER != 0 ] 
+then
+    echo "$COUNTER Pipelines in $3 state"
+    echo "----------------------------------------------" 
+fi
 }
 
 source $SCRIPTDIR/select-ns.sh default     
 QUERY=$(kubectl get pipelineruns -o yaml -n "$NS")
-
-
-echo "Running: "
-COUNTER=0
-printPR "$QUERY" "Unknown"  
-echo "$COUNTER Pipelines actively Running"
-echo "----------------------------------------------" 
-echo  
-
-echo "Completed:"
-COUNTER=0
-printPR "$QUERY" "True"
-echo "$COUNTER Completed Pipelines"
-echo "----------------------------------------------" 
-echo 
-
-echo "Failed:"
-COUNTER=0
-printPR "$QUERY" "False"
-echo "$COUNTER Failed Pipelines"
-echo "----------------------------------------------" 
-echo
-
-echo "Missing Status: "
-COUNTER=0
-printPR "$QUERY" "null"  
-echo "$COUNTER Pipelines missing status"
-echo "----------------------------------------------" 
-echo 
+ 
+printPR "$QUERY" "Unknown"  "Running" 
+printPR "$QUERY" "True" "Completed:"   
+printPR "$QUERY" "False" "Failed" 
+printPR "$QUERY" "null"  "Missing Status" 
 
  

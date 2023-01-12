@@ -1,4 +1,5 @@
 
 
- r (install selected)
- s (status all apps), p (pipelines), t (webhooks)  
+ i (install selected)
+ s (status all apps), p (pipelines), r (routes), t (webhooks)  
+ x (delete pipelines) z(delete selected apps)
