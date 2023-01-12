@@ -14,17 +14,9 @@ echo "$COUNTER demos found."
 function updateserverinfo() {
     source ./hack/select-ns.sh default  
 }
-
-function showpipelines() {
-    NS=$1   
-    CONF=$(kubectl get configmap build-pipelines-defaults -n $NS -o yaml 2>/dev/null | yq '.data') 
-    if [ "$CONF" = "null" ]; then
-        CONF=default 
-    fi
-    printf "\tPipelines Bundle: $CONF\n" 
-}
-
-function showroutes() {
+  
+function showroutes() { 
+    printf "Routes:\n"   
     NS=$1  
     kubectl get routes -n $NS  -o yaml  2>/dev/null | 
         yq '.items[].spec.host | select(. != "el*")' |  
@@ -298,10 +290,9 @@ function prompt_for_multiselect {
 
 
 function showcurrentcontext {
-    printf  "\nBuild: %s NS: %s Context: %s\n" "$BUNDLE" "$NS" "$CURRENT_CONTEXT"   
+    printf  "\nNS: %s Context: %s\n"  "$NS" "$CURRENT_CONTEXT"   
 } 
-
-BUNDLE=default   
+ 
 BANNER=banner 
 MENU_TEXT=menu.txt  
 PROMPT_DEMOS=""
@@ -333,7 +324,7 @@ until [ "${SELECT^}" == "q" ]; do
         for selected in $result
         do  
             if [ "$selected" = "true" ]; then  
-                ./hack/e2e.sh demos/${DEMOS[$SCOUNTER]} $BUNDLE  
+                ./hack/e2e.sh demos/${DEMOS[$SCOUNTER]} 
             fi
             let SCOUNTER++
         done
@@ -356,7 +347,6 @@ until [ "${SELECT^}" == "q" ]; do
             showappstatus $app $NS
         done   
         echo 
-        showpipelines $NS
         showroutes $NS 
         read -n1 -p "press key to continue: "  WAIT
     fi 
@@ -390,14 +380,6 @@ until [ "${SELECT^}" == "q" ]; do
         echo "Show all pipelines"
         ./hack/ls-builds.sh 
         read -n1 -p "Press any key to continue ..."  WAIT
-    fi
-    if [ "$SELECT" = "h" ]; then 
-        echo; echo "Configure all new projects to use the HACBS Repos"
-        BUNDLE=hacbs
-    fi
-    if [ "$SELECT" = "d" ]; then 
-        echo; echo "Configure all new projects to use the default bundle"
-        BUNDLE=default       
     fi 
 done 
 

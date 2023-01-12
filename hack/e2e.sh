@@ -1,17 +1,12 @@
 #!/bin/bash
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-DEMODIR=$1 
-BUNDLE=$2
+DEMODIR=$1  
 if [ -z "$DEMODIR" ]
 then
       echo Missing parameter Demo Directory 
       exit -1 
-fi
-if [ -z "$BUNDLE" ]
-then
-      BUNDLE=default 
-fi  
+fi 
 
 APPNAME=$(basename $DEMODIR)   
 # depending on where you are installing the namespace is different.
@@ -31,18 +26,7 @@ ERR=$?
 if [  "$ERR" != "0" ]
 then 
   $SCRIPTDIR/create-ns.sh $NS
-fi
-
-if [ "$BUNDLE" = "hacbs" ]; then 
-  echo
-  echo "Use the HACBS pipelines in $NS"
-  kubectl create configmap build-pipelines-defaults --from-literal=default_build_bundle=quay.io/redhat-appstudio/hacbs-templates-bundle:latest -o yaml --dry-run=client | \
-    kubectl apply -n $NS -f -
-else 
-  echo
-  echo "Use the default pipelines in $NS"
-  kubectl delete configmap build-pipelines-defaults -n $NS   2>/dev/null
-fi
+fi 
 
 if [ "$USE_REDHAT_QUAY" == "true" ] 
 then
