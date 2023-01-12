@@ -2,7 +2,7 @@
 
 export CURRENT_CONTEXT=$(kubectl config current-context)  
 if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then  
-        echo "Running private version of App Studio using personal user for Quay"  
+        #echo "Running private version of App Studio using personal user for Quay"  
         NS=rockbroth   
         USE_REDHAT_QUAY=false 
         kubectl get ns $NS &> /dev/null
@@ -13,7 +13,7 @@ if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then
                 oc new-project $NS
         fi 
 else 
-        echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"
+        #echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"
         NS=$(oc project --short)  
         USE_REDHAT_QUAY=true  
 fi
