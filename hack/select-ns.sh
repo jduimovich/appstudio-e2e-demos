@@ -12,6 +12,8 @@ if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then
         if [  "$ERR" != "0" ]
         then 
                 $SCRIPTDIR/create-ns.sh $NS 
+        else   
+                oc project $NS
         fi 
 else 
         #echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"

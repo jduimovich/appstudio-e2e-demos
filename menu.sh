@@ -168,7 +168,7 @@ until [ "${SELECT^}" == "q" ]; do
         cat $FULLPAGE
         read -n1 -t 1 -p "$LOOPCOUNT: will continue looping, press q to stop ..."  WAIT 
         if [ "$WAIT" != "q" ]; then
-          echo "refreshing ..."
+          echo "$WAIT refreshing ..."
         fi
       done 
     fi 
