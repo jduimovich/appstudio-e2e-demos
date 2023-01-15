@@ -5,7 +5,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export CURRENT_CONTEXT=$(kubectl config current-context)  
 if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then  
         #echo "Running private version of App Studio using personal user for Quay"  
-        NS=personal-backend   
+        NS=aaaa-studio
         USE_REDHAT_QUAY=false 
         kubectl get ns $NS &> /dev/null
         ERR=$? 
