@@ -7,6 +7,10 @@ then
       echo Missing APPNAME Param
       exit -1 
 fi  
+if [ -z "$NS" ]
+then
+      NS=$(oc project --short)
+fi  
 echo "Create Application from Template: $APPNAME in $NS" 
 format=$(<$SCRIPTDIR/templates/application.yaml)
 mkdir -p $SCRIPTDIR/logs/$APPNAME

@@ -1,0 +1,32 @@
+
+REPO=$1
+if [ -z "$REPO" ]
+then
+      echo Missing REPO  
+      exit -1 
+fi
+CDQ_TMP=$(mktemp)  
+cat << EOF >$CDQ_TMP
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: ComponentDetectionQuery
+metadata:  
+  name: test-cdq   
+spec:
+  git:
+    context: ""
+    revision: ""
+    url: $REPO
+  secret: ""
+EOF
+
+kubectl delete ComponentDetectionQuery test-cdq 
+kubectl apply -f $CDQ_TMP
+
+while true 
+do
+  clear 
+  echo "CDQ FOR : $REPO"
+  echo
+  kubectl get ComponentDetectionQuery test-cdq  -o yaml | yq .status 
+  sleep 10 
+done

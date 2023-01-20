@@ -19,11 +19,16 @@ function updateserverinfo() {
 source hack/utils-for-menu.sh
   
 function showroutes() { 
-    printf "\nRoutes:\n"   
     NS=$1  
-    kubectl get routes -n $NS  -o yaml  2>/dev/null | 
-        yq '.items[].spec.host | select(. != "el*")' |  
-        xargs -n 1 printf "\tRoute: https://%s\n"
+    ROUTES=$(kubectl get routes -n $NS  -o yaml  2>/dev/null | yq '.items[].spec.host | select(. != "el*")')
+    if [ "$ROUTES" != "" ]
+    then
+        printf "\nRoutes:\n"   
+        echo $ROUTES | xargs -n 1 printf "\tRoute: https://%s\n"
+    else 
+        printf "\nNo Routes found in $NS:\n"   
+    fi 
+        
 }
 
 
@@ -36,12 +41,35 @@ function showallappstatus() {
     done   
 }
 
+function showResourceName() {
+        RES=$1
+        ALLRS=$(kubectl get $RES -o yaml | yq ".items[0].metadata.name") 
+        NAME=$ALLRS
+        if [ $ALLRS == "null" ]; then
+            ALLRS="(no $RES found)"
+            NAME=""
+        fi
+        printf "\n%s: %s\n" "$RES" "$ALLRS"
+        printf  "Use CLI for more info: %s\n"  "kubectl get $RES $NAME -o yaml"
+}
+
+
+
 function showappstatus() {
     app=$1 
     NS=$2 
-    printf "\nApplication: $app\n"   
+    printf "\nApplication: $app\n"    
+    GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | 
+                yq '.status.devfile' |
+                yq '.metadata.attributes' |
+                grep gitOpsRepository.url | 
+                cut -d ' ' -f 2)       
+    printf "\tGitops Repo: %s\n" "$GOPS"
+    printf " "  
+
     COMPONENTS=$(kubectl get components -o yaml) 
-    for COMPONENT_INDEX in {0..32}   
+    LEN=$(echo  kubectl get components -o yaml  | yq length)  
+    for COMPONENT_INDEX in  $(eval echo {0..$LEN})
     do
         COMPONENT=$(echo "$COMPONENTS" | yq  ".items[$COMPONENT_INDEX]" -)  
         if [ "$COMPONENT" == "null" ] 
@@ -55,15 +83,23 @@ function showappstatus() {
             REPO=$(echo "$COMPONENT" | yq  ".spec.source.git.url" -)
             IMG=$(echo "$COMPONENT" | yq '.spec.containerImage' -) 
             printf "\tComponent: %s\n\t\tGit: %s\n\t\tImage: %s\n" $NM  $REPO $IMG  
-            GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | 
-                yq '.status.devfile' |
-                yq '.metadata.attributes' |
-                grep gitOpsRepository.url | 
-                cut -d ' ' -f 2)      
-        fi  
+           
+        fi   
+        GOPSDEPLOYMENT=$(kubectl get GitOpsDeployment -l "appstudio.application.name=$app" -o yaml) 
+        NM=$(echo "$GOPSDEPLOYMENT" | yq  ".items[0].metadata.name" -) 
+        REPO=$(echo "$GOPSDEPLOYMENT" | yq  ".items[0].spec.source.repoURL" -)
+        HEALTH=$(echo "$GOPSDEPLOYMENT" | yq  '.items[0].status.health.status' -)
+        DEST=$(echo "$GOPSDEPLOYMENT" | yq  ".items[0].status.reconciledState.destination.namespace" -)  
+
+        printf "\nGitOpsDeployment: %s\n\tGit: %s\n" $NM  $REPO   
+        printf "\tHealth: %s Destination: %s\n" "$HEALTH" "$DEST"
+        printf  "\tUse CLI for more info: %s \n"  "kubectl get GitOpsDeployment -l \"appstudio.application.name=$app\" -o yaml"
+ 
+        showResourceName Environments
+        showResourceName Snapshot 
+        showResourceName SnapshotEnvironmentBinding
+
     done  
-    printf "\tGitops Repo: %s\n" "$GOPS"
-    printf " "  
 }
  
 function showcurrentcontext {
@@ -72,6 +108,8 @@ function showcurrentcontext {
   
 # init and compute menu options
 updateserverinfo   
+
+./hack/create-environment.sh $NS development
 
 BANNER=banner 
 MENU_TEXT=menu.txt  

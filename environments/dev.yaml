@@ -1,9 +1,0 @@
-apiVersion: appstudio.redhat.com/v1alpha1
-kind: Environment
-metadata: 
-  name: dev
-  namespace: jduimovich  
-spec:
-  deploymentStrategy: AppStudioAutomated
-  displayName: dev
-  type: poc
