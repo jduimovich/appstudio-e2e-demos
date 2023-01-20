@@ -109,7 +109,7 @@ function showcurrentcontext {
 # init and compute menu options
 updateserverinfo   
 
-./hack/create-environment.sh $NS development
+./hack/create-environment.sh $NS dev
 
 BANNER=banner 
 MENU_TEXT=menu.txt  

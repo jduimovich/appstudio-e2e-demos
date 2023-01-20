@@ -9,9 +9,17 @@ fi
 ENVNAME=$2    
 if [ -z "$ENVNAME" ]
 then
-      ENVNAME="development" 
+      ENVNAME="dev" 
 fi
- 
+
+kubectl get Environment $ENVNAME -n $NS &> /dev/null
+ERR=$? 
+if [  "$ERR" == "0" ]
+then
+      echo "Environment $ENVNAME already created"
+      exit 0
+fi
+
 ENVFILE=$(mktemp)
 cat << EOF > $ENVFILE 
 apiVersion: appstudio.redhat.com/v1alpha1
