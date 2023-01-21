@@ -1,0 +1,7 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: hacbs-probe-payload 
+spec:
+  description: "hacbs-probe-payload built in App Studio"
+  displayName: "IntegrationTestScenario "
