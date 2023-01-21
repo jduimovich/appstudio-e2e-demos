@@ -1,0 +1,8 @@
+#!/bin/bash
+
+USER=$1
+
+curl -s https://api.github.com/users/$USER/repos?per_page=200 | \
+    jq -r ".[].html_url" | \
+    dos2unix  |
+    xargs -n1 echo

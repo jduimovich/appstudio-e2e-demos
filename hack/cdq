@@ -5,12 +5,16 @@ then
       echo Missing REPO  
       exit -1 
 fi
+ 
+#echo "CDQ: $REPO" 
+
+CDQ_NAME=test-cdq
 CDQ_TMP=$(mktemp)  
 cat << EOF >$CDQ_TMP
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: ComponentDetectionQuery
 metadata:  
-  name: test-cdq   
+  name: $CDQ_NAME 
 spec:
   git:
     context: ""
@@ -19,14 +23,43 @@ spec:
   secret: ""
 EOF
 
-kubectl delete ComponentDetectionQuery test-cdq 
-kubectl apply -f $CDQ_TMP
-
-while true 
+kubectl delete ComponentDetectionQuery $CDQ_NAME 2>&1  > /dev/null 
+kubectl apply -f $CDQ_TMP  2>&1  > /dev/null 
+ 
+#echo -n "Waiting for CDQ $CDQ_NAME to be ready."
+MAX_WAIT=30
+WAIT_COUNTER=1
+while :
 do
-  clear 
-  echo "CDQ FOR : $REPO"
-  echo
-  kubectl get ComponentDetectionQuery test-cdq  -o yaml | yq .status 
-  sleep 10 
-done
+    YAML=$(kubectl get ComponentDetectionQuery $CDQ_NAME -o yaml)
+    LEN=$(echo "$YAML" | yq '.status.conditions' | yq length)
+    if [ $LEN != 0 ]
+    then 
+      let LEN--
+      STATUS=$(echo "$YAML" | yq ".status.conditions[$LEN].type")  
+      if [ "$STATUS" == "Completed" ]
+      then
+          echo 
+          DF=$( echo "$YAML" |  grep devfileFound | xargs)
+          DFU=$( echo "$YAML" |  grep devfileUrl | xargs)
+          DOCKER=$( echo "$YAML" |  grep dockerfileUrl | xargs)
+          if [ "$DF$DFU$DOCKER" == "" ]; then
+            STATUS=$( echo "$YAML" |  yq ".status")
+            printf "CDQ: %s\nNOTHING FOUND: STATUS HERE %s\n\n" $REPO "$STATUS"
+          else
+            printf "CDQ: %s\n\t%s\n\t%s\n\n" $REPO "$DF" "$DFU"
+          fi 
+          break
+      fi 
+    fi 
+    let WAIT_COUNTER++
+    if [ "$WAIT_COUNTER" == "$MAX_WAIT" ]
+    then
+        echo "WAIT LOOP TIMEOUT - continuing ... "
+        break
+    fi 
+    sleep 1
+done 
+
+  
+ 

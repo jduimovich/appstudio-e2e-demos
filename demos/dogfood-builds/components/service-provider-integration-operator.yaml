@@ -6,6 +6,7 @@ spec:
   componentName: service-provider-integration-operator
   application: dogfood-builds
   containerImage: quay.io/jduimovich0/service-provider-integration-operator
+  skipGitOpsResourceGeneration: true
   source:
     git:
       url: https://github.com/redhat-appstudio/service-provider-integration-operator

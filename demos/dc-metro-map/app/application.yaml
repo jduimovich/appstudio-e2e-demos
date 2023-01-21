@@ -4,4 +4,4 @@ metadata:
   name: dc-metro-map 
 spec:
   description: "dc-metro-map built in App Studio"
-  displayName: dc-metro-map
+  displayName: "dc-metro-map built in App Studio"

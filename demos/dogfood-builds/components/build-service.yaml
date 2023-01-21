@@ -5,7 +5,8 @@ metadata:
 spec:
   componentName: build-service
   application: dogfood-builds
-  containerImage: quay.io/jduimovich0/build-service
+  containerImage: quay.io/jduimovich0/build-service 
+  skipGitOpsResourceGeneration: true
   source:
     git:
       url: https://github.com/redhat-appstudio/build-service

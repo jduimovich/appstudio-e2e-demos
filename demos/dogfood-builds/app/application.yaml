@@ -3,5 +3,5 @@ kind: Application
 metadata:
   name: dogfood-builds
 spec:
-  description: "App Studio (dogfood-builds) built in App Studio"
-  displayName: dogfood-builds
+  description: "Builds of selected components from Stone Soup (dogfooding)"
+  displayName: "Stone Soup (dogfooding) of selected builds (no deploy)"
