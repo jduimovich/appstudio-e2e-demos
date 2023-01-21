@@ -1,0 +1,7 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: single-nodejs-app
+spec:
+  description: "Demo of Node.js App, no dev or dockerfile"
+  displayName: "Node.js App - single container"
