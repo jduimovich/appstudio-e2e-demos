@@ -4,4 +4,4 @@ metadata:
   name: burr-spring-sample
 spec:
   description: "Burr Spring Sample"
-  displayName: "Burr Sutter Example Spring Application"
+  displayName: "Spring Boot® using Maven by Burr Sutter"

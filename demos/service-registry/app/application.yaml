@@ -4,4 +4,4 @@ metadata:
   name: service-registry
 spec:
   description: "service-registry built in App Studio"
-  displayName: "service-registry build-only example"
+  displayName: "Service Registry build-only example"
