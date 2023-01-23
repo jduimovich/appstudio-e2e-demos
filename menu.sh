@@ -154,12 +154,7 @@ until [ "${SELECT^}" == "q" ]; do
             let SCOUNTER++
         done
         read -n1 -p "press key to continue: "  WAIT
-    fi     
-    if [ "$SELECT" = "t" ]; then  
-        clear   
-        ./hack/build-all.sh $NS 
-        read -n1 -p "press key to continue: "  WAIT
-    fi 
+    fi   
     #show all running, instead of selected ones
     if [ "$SELECT" = "s" ]; then  
         clear 

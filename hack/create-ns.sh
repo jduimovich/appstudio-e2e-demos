@@ -1,5 +1,7 @@
 #!/bin/bash
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $SCRIPTDIR/config.sh 
+
 NS=$1    
 if [ -z "$NS" ]
 then
@@ -9,7 +11,8 @@ fi
 
 echo "Create NS: $NS." 
 format=$(<$SCRIPTDIR/templates/namespace.yaml) 
-mkdir -p $SCRIPTDIR/logs/$NS
+MANIFESTS=$MANIFEST_DIR/$NS
+mkdir -p $MANIFESTS
 printf "$format\n" $NS  | \
-      tee $SCRIPTDIR/logs/$NS/namespace.yaml | \
+      tee $MANIFESTS/namespace.yaml | \
       kubectl apply -f -     

@@ -1,5 +1,7 @@
 #!/bin/bash
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $SCRIPTDIR/config.sh 
+
 APPNAME=$1 
 NS=$2 
 if [ -z "$APPNAME" ]
@@ -13,8 +15,9 @@ then
 fi  
 echo "Create Application from Template: $APPNAME in $NS" 
 format=$(<$SCRIPTDIR/templates/application.yaml)
-mkdir -p $SCRIPTDIR/logs/$APPNAME
+MANIFESTS=$MANIFEST_DIR/$APPNAME
+mkdir -p $MANIFESTS
 printf "$format\n" $APPNAME $APPNAME $APPNAME | \
-       tee $SCRIPTDIR/logs/$APPNAME/application.yaml | \
+       tee $MANIFESTS/application.yaml | \
        kubectl apply -n $NS -f -   
    

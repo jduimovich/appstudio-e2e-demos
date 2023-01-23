@@ -1,5 +1,6 @@
 #!/bin/bash
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $SCRIPTDIR/config.sh 
 
 DEMODIR=$1  
 if [ -z "$DEMODIR" ]
@@ -11,14 +12,15 @@ fi
 APPNAME=$(basename $DEMODIR)    
 source $SCRIPTDIR/select-ns.sh $APPNAME 
 echo "Installing AppName: $APPNAME into namespace: $NS"  
-LOG=$(basename $DEMODIR) 
-rm -rf $SCRIPTDIR/logs/$LOG
-mkdir -p $SCRIPTDIR/logs/$LOG
-echo "Log: $SCRIPTDIR/logs/$LOG" 
+
+MANIFESTS=$MANIFEST_DIR/$APPNAME
+rm -rf $MANIFESTS
+mkdir -p $MANIFESTS
+echo "Manifests can be found in: $MANIFESTS" 
 
 if [ "$USE_REDHAT_QUAY" != "true" ] 
 then 
-  kubectl get secret docker-registry redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
+  kubectl get secret redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
   ERR=$? 
   if [  "$ERR" == "0" ]
   then
@@ -36,15 +38,14 @@ if [ -d "$DEMODIR/app" ]
 then
   echo "App Definition Found, use $DEMODIR/app." 
   kubectl apply -n $NS -f $DEMODIR/app  
-  cp $DEMODIR/app/*  $SCRIPTDIR/logs/$LOG/ 
+  cp $DEMODIR/app/*  $MANIFESTS 
 else 
   $SCRIPTDIR/create-app.sh $APPNAME $NS
 fi 
 while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do 
   sleep 1
-done
-echo 
-echo "Waiting for Application: $APPNAME to be ready."
+done 
+echo -n "Waiting for Application: $APPNAME to be ready."
 MAX_WAIT=5
 WAIT_COUNTER=1
 while :
@@ -108,13 +109,13 @@ do
     FULL_IMAGE=quay.io/$QUAY_USER/$COMP
     echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
     yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
-        tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
+        tee $MANIFESTS/$B.yaml | \
         kubectl apply -n $NS -f -
   else
       IMAGE=$(yq '.spec.containerImage' $component)
       echo "Binary only Component,  reference image unmodified $IMAGE"
       cat $component |  
-        tee $SCRIPTDIR/logs/$LOG/$B.yaml | \
+        tee $MANIFESTS/$B.yaml | \
         kubectl apply -n $NS -f -
   fi
 done
@@ -124,29 +125,29 @@ then
     echo "IntegrationTestScenarios exist with content."
     echo "Install IntegrationTestScenarios."
     kubectl apply -n $NS -f $DEMODIR/scenarios
-    cp $DEMODIR/scenarios/*  $SCRIPTDIR/logs/$LOG/
+    cp $DEMODIR/scenarios/*  $MANIFESTS/
 else
     echo "No IntegrationTestScenarios found for $APPNAME."
 fi
 
-if [ -d "$DEMODIR/add-ons" ]
-then
-    echo "Add-ons exist with content."
-    echo "Install Add-ons (hack)."  
-      # Extra stuff not provided by gitops/app studio
-      # App Studio needs a concept of user "add-ons" via gitops/infrastructure components
-      # Yaml only, not code
-      format=$(<$SCRIPTDIR/templates/add-ons.yaml) 
-      NM="$APPNAME-addon"
-      RPATH=demos/$APPNAME/add-ons
-      REPO_URL=$(git config --get remote.origin.url)
-      printf "$format\n"  $NM $NS $RPATH $REPO_URL | kubectl apply -f -   
-else
-    echo "No Add-ons found for $APPNAME."
-fi
+# if [ -d "$DEMODIR/add-ons" ]
+# then
+#     echo "Add-ons exist with content."
+#     echo "Install Add-ons (hack)."  
+#       # Extra stuff not provided by gitops/app studio
+#       # App Studio needs a concept of user "add-ons" via gitops/infrastructure components
+#       # Yaml only, not code
+#       format=$(<$SCRIPTDIR/templates/add-ons.yaml) 
+#       NM="$APPNAME-addon"
+#       RPATH=demos/$APPNAME/add-ons
+#       REPO_URL=$(git config --get remote.origin.url)
+#       printf "$format\n"  $NM $NS $RPATH $REPO_URL | kubectl apply -f -   
+# else
+#     echo "No Add-ons found for $APPNAME."
+# fi
   
 echo 
-echo "Find the yaml used here: $SCRIPTDIR/logs/$LOG/"
-ls -al $SCRIPTDIR/logs/$LOG/
+echo "Find the yaml used here: $MANIFESTS/"
+ls -al $MANIFESTS/
 echo "done"
 echo
