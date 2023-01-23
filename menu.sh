@@ -43,7 +43,7 @@ function showallappstatus() {
 
 function showResourceName() {
         RES=$1
-        ALLRS=$(kubectl get $RES -o yaml | yq ".items[0].metadata.name") 
+        ALLRS=$(kubectl get $RES -n $NS -o yaml | yq ".items[0].metadata.name") 
         NAME=$ALLRS
         if [ $ALLRS == "null" ]; then
             ALLRS="(no $RES found)"
@@ -67,8 +67,9 @@ function showappstatus() {
     printf "\tGitops Repo: %s\n" "$GOPS"
     printf " "  
 
-    COMPONENTS=$(kubectl get components -o yaml) 
-    LEN=$(echo  kubectl get components -o yaml  | yq length)  
+    COMPONENTS=$(kubectl get components -n $NS -o yaml) 
+    LEN=$(echo "$COMPONENTS" | yq ".items[].metadata.name" | wc -l)  
+    LEN=32
     for COMPONENT_INDEX in  $(eval echo {0..$LEN})
     do
         COMPONENT=$(echo "$COMPONENTS" | yq  ".items[$COMPONENT_INDEX]" -)  
@@ -79,26 +80,32 @@ function showappstatus() {
         APPNAME=$(echo "$COMPONENT" | yq  ".spec.application" -) 
         if [ $APPNAME == "$app" ] 
         then
-            NM=$(echo "$COMPONENT" | yq  ".metadata.name" -) 
+            COMPONENT_NAME=$(echo "$COMPONENT" | yq  ".metadata.name" -) 
             REPO=$(echo "$COMPONENT" | yq  ".spec.source.git.url" -)
             IMG=$(echo "$COMPONENT" | yq '.spec.containerImage' -) 
-            printf "\tComponent: %s\n\t\tGit: %s\n\t\tImage: %s\n" $NM  $REPO $IMG  
-           
-        fi   
-        GOPSDEPLOYMENT=$(kubectl get GitOpsDeployment -l "appstudio.application.name=$app" -o yaml) 
-        NM=$(echo "$GOPSDEPLOYMENT" | yq  ".items[0].metadata.name" -) 
-        REPO=$(echo "$GOPSDEPLOYMENT" | yq  ".items[0].spec.source.repoURL" -)
-        HEALTH=$(echo "$GOPSDEPLOYMENT" | yq  '.items[0].status.health.status' -)
-        DEST=$(echo "$GOPSDEPLOYMENT" | yq  ".items[0].status.reconciledState.destination.namespace" -)  
+            printf "\tComponent: %s\n\t\tGit: %s\n\t\tImage: %s\n" $COMPONENT_NAME  $REPO $IMG  
+            
+            RES=$(kubectl get GitOpsDeployment -l "appstudio.application.name=$app" -o yaml) 
+            NM=$(echo "$RES" | yq  ".items[0].metadata.name" -) 
+            REPO=$(echo "$RES" | yq  ".items[0].spec.source.repoURL" -)
+            HEALTH=$(echo "$RES" | yq  '.items[0].status.health.status' -)
+            DEST=$(echo "$RES" | yq  ".items[0].status.reconciledState.destination.namespace" -)  
 
-        printf "\nGitOpsDeployment: %s\n\tGit: %s\n" $NM  $REPO   
-        printf "\tHealth: %s Destination: %s\n" "$HEALTH" "$DEST"
-        printf  "\tUse CLI for more info: %s \n"  "kubectl get GitOpsDeployment -l \"appstudio.application.name=$app\" -o yaml"
- 
-        showResourceName Environments
-        showResourceName Snapshot 
-        showResourceName SnapshotEnvironmentBinding
+            printf "\nGitOpsDeployment: %s\n\tGit: %s\n" $NM  $REPO   
+            printf "\tHealth: %s Destination: %s\n" "$HEALTH" "$DEST"
+            printf  "\tUse CLI for more info: %s \n"  "kubectl get GitOpsDeployment -l \"appstudio.application.name=$app\" -o yaml"
 
+            RES=$(kubectl get snapshots -l  "appstudio.openshift.io/component=$COMPONENT_NAME" -o yaml) 
+            NM=$(echo "$RES" | yq  ".items[0].metadata.name" -)  
+            printf "\nSnapshots: %s\n" $NM  
+            printf  "Use CLI for more info: %s \n"  "kubectl get snapshots -l  "appstudio.openshift.io/component=$COMPONENT_NAME" -o yaml"
+    
+            RES=$(kubectl get SnapshotEnvironmentBinding -l  "appstudio.application=$app" -o yaml) 
+            NM=$(echo "$RES" | yq  ".items[0].metadata.name" -)  
+            ENVIRONMENT=$(echo "$RES" | yq  ".items[0].spec.environment" -)  
+            printf "\nSnapshotEnvironmentBinding: %s Environment: %s\n" $NM  $ENVIRONMENT
+            printf  "Use CLI for more info: %s \n"  "kubectl get SnapshotEnvironmentBinding -l  "appstudio.application=$app" -o yaml"
+        fi  
     done  
 }
  
@@ -160,6 +167,12 @@ until [ "${SELECT^}" == "q" ]; do
         showcurrentcontext      
         showallappstatus 
         showroutes $NS 
+        read -n1 -p "press key to continue: "  WAIT
+    fi 
+    if [ "$SELECT" = "e" ]; then  
+        clear 
+        echo "Environments" 
+        showResourceName Environments       
         read -n1 -p "press key to continue: "  WAIT
     fi 
     if [ "$SELECT" = "r" ]; then  
