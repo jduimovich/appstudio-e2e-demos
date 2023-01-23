@@ -4,4 +4,5 @@ metadata:
   name: devfile-sample-go-basic
 spec:
   description: "The devfile sample for golang"
-  displayName: "Devfile sample for golang"
+  # displayName: "Devfile sample for golang"
+  displayName: "devfile-sample-go-basic"

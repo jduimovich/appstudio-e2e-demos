@@ -4,4 +4,5 @@ metadata:
   name: graphtuitous 
 spec:
   description: "graphtuitous built in App Studio"
-  displayName: "graphtuitous - Multi-Component Application"
+  # displayName: "graphtuitous - Multi-Component Application"
+  displayName: "graphtuitous"

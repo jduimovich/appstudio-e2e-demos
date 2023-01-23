@@ -4,4 +4,5 @@ metadata:
   name: dogfood-builds
 spec:
   description: "Builds of selected components from Stone Soup (dogfooding)"
-  displayName: "Stone Soup (dogfooding) of selected builds (no deploy)"
+  # displayName: "Stone Soup (dogfooding) of selected builds (no deploy)"
+  displayName: "dogfood-builds"

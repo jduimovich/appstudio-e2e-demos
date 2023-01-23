@@ -4,4 +4,5 @@ metadata:
   name: hacbs-probe-payload 
 spec:
   description: "hacbs-probe-payload built in App Studio"
-  displayName: "IntegrationTestScenario "
+  # displayName: "IntegrationTestScenario "
+  displayName: "hacbs-probe-payload"
