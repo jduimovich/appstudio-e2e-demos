@@ -1,0 +1,12 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: docker-shell-test
+spec:
+  componentName: docker-shell-test
+  application: docker-shell-test
+  containerImage: quay.io/jduimovich0/docker-shell-test 
+  skipGitOpsResourceGeneration: true 
+  source:
+    git:
+      url: https://github.com/jduimovich/docker-shell-test

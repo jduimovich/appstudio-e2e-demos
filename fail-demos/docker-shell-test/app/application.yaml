@@ -1,0 +1,7 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: docker-shell-test
+spec:
+  description: "docker-shell-test use SHELL in Dockerfile" 
+  displayName: "docker-shell-test"
