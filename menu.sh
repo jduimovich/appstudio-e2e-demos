@@ -9,6 +9,7 @@ do
    fi
 done
 echo "$COUNTER demos found."  
+source ./hack/config.sh 
 
 # set env vars for various options, kcp,crc,appstudio-pre-kcp
 function updateserverinfo() {
@@ -148,8 +149,11 @@ until [ "${SELECT^}" == "q" ]; do
         let SCOUNTER=1
         for selected in $result
         do  
-            if [ "$selected" = "true" ]; then  
-                ./hack/e2e.sh demos/${DEMOS[$SCOUNTER]} 
+            if [ "$selected" = "true" ]; then
+                APPNAME=${DEMOS[$SCOUNTER]}
+                INSTALL_LOG="$LOG_DIR/$APPNAME.txt"
+                echo "Install log in: $INSTALL_LOG"
+                ./hack/e2e.sh demos/$APPNAME | tee $INSTALL_LOG
             fi
             let SCOUNTER++
         done

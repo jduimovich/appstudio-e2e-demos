@@ -18,21 +18,24 @@ rm -rf $MANIFESTS
 mkdir -p $MANIFESTS
 echo "Manifests can be found in: $MANIFESTS" 
 
+SECRET_NAME=redhat-appstudio-staginguser-pull-secret
 if [ "$USE_REDHAT_QUAY" != "true" ] 
 then 
-  kubectl get secret redhat-appstudio-registry-pull-secret -n $NS &> /dev/null
+  kubectl get secret $SECRET_NAME -n $NS &> /dev/null
   ERR=$? 
   if [  "$ERR" == "0" ]
   then
-    echo "Secret docker-registry redhat-appstudio-registry-pull-secret already exists"
+    echo "Secret docker-registry $SECRET_NAME already exists"
   else
     echo "Install Secret for user $MY_QUAY_USER in Quay.io" 
-    kubectl create secret -n $NS docker-registry redhat-appstudio-registry-pull-secret \
+    kubectl create secret -n $NS docker-registry $SECRET_NAME \
       --docker-server="https://quay.io" \
       --docker-username=$MY_QUAY_USER \
       --docker-password=$MY_QUAY_TOKEN  2>/dev/null
+    oc secrets link pipeline $SECRET_NAME  
   fi
 fi
+
 
 if [ -d "$DEMODIR/app" ] 
 then

@@ -1,0 +1,8 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: fast-build
+spec:
+  description: "dockerfile with zero build from ubi minimal"
+  # displayName: "UBI Minimal noop dockerfile"
+  displayName: "fast-build"

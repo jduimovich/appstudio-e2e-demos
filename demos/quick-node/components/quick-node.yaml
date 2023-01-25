@@ -1,0 +1,17 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: quick-node
+spec:
+  componentName: quick-node
+  application: quick-node
+  containerImage: quay.io/jduimovich0/quick-node 
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  source:
+    git:
+      url: https://github.com/jduimovich/quick-node 
