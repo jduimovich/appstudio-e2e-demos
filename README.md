@@ -1,35 +1,21 @@
 # appstudio-e2e-demos
 
-This repo contains a selection of App Studio Demos. 
+This repo contains a selection of Stone Studio Demos. 
 The Demos consist of the Application and Components needed to bootstrap a demo.
+For demos which do not have devfiles. 
 
-Run `./menu.sh` to try it on a app studio cluster ...
+Run `./menu.sh` to try it on any cluster you are connected to.
+This has been tested on CRC infra-deployments, as well as Stone Soup Staging.
+
 Note: As per the infra-deployments examples, you need to set `MY_QUAY_USER` and `MY_QUAY_TOKEN` to enable push images to your personal registry.
 
-<img width="953" alt="image" src="https://user-images.githubusercontent.com/7844190/172205712-983f2b33-ec77-453e-bf5b-b0c773f09469.png">
-
-
-"s" will print status
-<img width="1296" alt="image" src="https://user-images.githubusercontent.com/7844190/172205839-9b09be22-1755-4787-8053-b0393f35d782.png">
-
-"t" will trigger all builds on all application components via triggers.
-
-<img width="1295" alt="image" src="https://user-images.githubusercontent.com/7844190/172206008-7621046b-fc92-42d4-aab7-c4eba5d3ad1f.png">
-
-
+<img width="953" alt="image" src="menu.jpg">
+ 
 Demos can be added in the subdirectory called demos in a structure like the following.
 
 ```
 tree demos/dc-metro-map/
-demos/dc-metro-map/
-├── add-ons
-│   ├── billing-service
-│   │   ├── route.yaml
-│   │   └── service.yaml
-│   ├── kustomization.yaml
-│   └── map-service
-│       ├── route.yaml
-│       └── service.yaml
+demos/dc-metro-map/ 
 ├── app
 │   └── application.yaml
 └── components
@@ -39,8 +25,8 @@ demos/dc-metro-map/
 
 `app` --- app studio application definition (optional- if missing, one will be created from the directory name, easy peasy)
 
+`components` --- component definitions 
+ 
 `devfiles` --- externally provided devfiles if original repo doesn't have one (optional)
 
-`components` --- component definitions 
-
-`add-ons` --- extra yaml needed for the app.  (optional)
+Demos are grouped into separate directories. Use "f" to paginate between them. 

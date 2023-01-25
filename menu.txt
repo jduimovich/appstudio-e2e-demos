@@ -1,5 +1,5 @@
 
 
- i (install selected)
+ i (install selected) f (forward page of demos)
  s (status all apps), p (pipelines), r (routes) 
  x (delete pipelines) z(delete selected apps)

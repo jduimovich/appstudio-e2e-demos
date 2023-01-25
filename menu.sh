@@ -1,24 +1,52 @@
 #!/usr/bin/env bash
-declare -A DEMOS
-COUNTER=0
-for dir in demos/*
-do
-   if [ -d $dir ]; then    
-      let COUNTER++  
-      DEMOS["$COUNTER"]=$(basename $dir)
-   fi
-done
-echo "$COUNTER demos found."  
-source ./hack/config.sh 
+
+DEMO_DIR_INDEX=1
+ALL_DEMOS=$(cat demo-dirs)
+DEMO_COUNT=$(echo "$ALL_DEMOS" | wc -w | cut -d ' ' -f 1) 
+let DEMO_COUNT++
+DEMO_DIR=demos
+
+function nextDemosDir() { 
+    let DEMO_DIR_INDEX++
+    if [ $DEMO_DIR_INDEX == $DEMO_COUNT ]; then
+        DEMO_DIR_INDEX=1
+    fi
+    initDemoList
+}
+ 
+function initDemoList() { 
+    declare -A DEMOS  
+    DEMO_DIR=$(echo $ALL_DEMOS | cut -d ' ' -f $DEMO_DIR_INDEX)
+    COUNTER=0
+    for dir in $DEMO_DIR/*
+    do
+    if [ -d $dir ]; then    
+        let COUNTER++  
+        DEMOS["$COUNTER"]=$(basename $dir) 
+    fi
+    done
+    echo "$COUNTER demos found."  
+    source ./hack/config.sh  
+    PROMPT_DEMOS=""
+    SELECTED_DEMOS=""
+    seperator=""
+    let SCOUNTER=1
+    for ignored in ${DEMOS[@]}
+    do 
+        PROMPT_DEMOS=$PROMPT_DEMOS$seperator${DEMOS[$SCOUNTER]}
+        SELECTED_DEMOS=$SELECTED_DEMOS$seperator"false"
+        seperator=";"
+        let SCOUNTER++
+    done    
+}
+ 
+# utilities (verbose) for menus, keep separate.
+source hack/utils-for-menu.sh
 
 # set env vars for various options, kcp,crc,appstudio-pre-kcp
 function updateserverinfo() {
     source ./hack/select-ns.sh default  
-}
-
-# utilities (verbose) for menus, keep separate.
-source hack/utils-for-menu.sh
-  
+}  
 function showroutes() { 
     NS=$1  
     ROUTES=$(kubectl get routes -n $NS  -o yaml  2>/dev/null | yq '.items[].spec.host | select(. != "el*")')
@@ -30,8 +58,7 @@ function showroutes() {
         printf "\nNo Routes found in $NS:\n"   
     fi 
         
-}
-
+} 
 
 function showallappstatus() {
     ALL_APPS=$(kubectl get  application.appstudio.redhat.com -o yaml -n $NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
@@ -53,9 +80,7 @@ function showResourceName() {
         printf "\n%s: %s\n" "$RES" "$ALLRS"
         printf  "Use CLI for more info: %s\n"  "kubectl get $RES $NAME -o yaml"
 }
-
-
-
+ 
 function showappstatus() {
     app=$1 
     NS=$2 
@@ -115,29 +140,22 @@ function showcurrentcontext {
 } 
   
 # init and compute menu options
-updateserverinfo   
-
+initDemoList
+updateserverinfo    
 ./hack/create-environment.sh $NS dev
 
 BANNER=banner 
 MENU_TEXT=menu.txt  
-PROMPT_DEMOS=""
-SELECTED_DEMOS=""
-seperator=""
-let SCOUNTER=1
-for ignored in ${DEMOS[@]}
-do 
-    PROMPT_DEMOS=$PROMPT_DEMOS$seperator${DEMOS[$SCOUNTER]}
-    SELECTED_DEMOS=$SELECTED_DEMOS$seperator"false"
-    seperator=";"
-    let SCOUNTER++
-done    
 ALL_CONTEXTS=$(kubectl  config get-contexts -o name | xargs -n 1 echo -n ";" | tr -d " ")
-ALL_CONTEXTS="${ALL_CONTEXTS:1}" 
+ALL_CONTEXTS="${ALL_CONTEXTS:1}"  
 
 until [ "${SELECT^}" == "q" ]; do
     clear 
     cat $BANNER
+    if [ -f $DEMO_DIR/info ];
+    then
+        cat $DEMO_DIR/info
+    fi 
     showcurrentcontext
     printf "Select apps (space to select/deselect, a for all, n for none)\n\n" 
     prompt_for_multiselect result "$PROMPT_DEMOS" "$SELECTED_DEMOS" SELECT   
@@ -153,7 +171,7 @@ until [ "${SELECT^}" == "q" ]; do
                 APPNAME=${DEMOS[$SCOUNTER]}
                 INSTALL_LOG="$LOG_DIR/$APPNAME.txt"
                 echo "Install log in: $INSTALL_LOG"
-                ./hack/e2e.sh demos/$APPNAME | tee $INSTALL_LOG
+                ./hack/e2e.sh $DEMO_DIR/$APPNAME | tee $INSTALL_LOG
             fi
             let SCOUNTER++
         done
@@ -173,7 +191,12 @@ until [ "${SELECT^}" == "q" ]; do
         echo "Environments" 
         showResourceName Environments       
         read -n1 -p "press key to continue: "  WAIT
-    fi 
+    fi
+    if [ "$SELECT" = "f" ]; then  
+        clear 
+        nextDemosDir
+        initDemoList       
+    fi  
     if [ "$SELECT" = "r" ]; then  
         clear  
         showroutes $NS 
