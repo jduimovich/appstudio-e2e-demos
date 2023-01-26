@@ -1,0 +1,8 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: devfile-sample-python-basic
+spec:
+  description: "The devfile sample for python"
+  # displayName: "Devfile sample for python"
+  displayName: "devfile-sample-python-basic"

@@ -1,0 +1,13 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: devfile-sample-java-springboot-basic
+spec:
+  componentName: devfile-sample-java-springboot-basic
+  application: devfile-sample-java-springboot-basic
+  containerImage: quay.io/jduimovich0/devfile-sample-java-springboot-basic
+  targetPort: 8081
+  source:
+    git:
+      url: https://github.com/devfile-samples/devfile-sample-java-springboot-basic  
+  
