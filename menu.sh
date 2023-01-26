@@ -13,9 +13,9 @@ function nextDemosDir() {
     fi
     initDemoList
 }
- 
+declare -A DEMOS  
 function initDemoList() { 
-    declare -A DEMOS  
+    DEMOS=()
     DEMO_DIR=$(echo $ALL_DEMOS | cut -d ' ' -f $DEMO_DIR_INDEX)
     COUNTER=0
     for dir in $DEMO_DIR/*
@@ -263,6 +263,8 @@ until [ "${SELECT^}" == "q" ]; do
         showcurrentcontext   
         let SCOUNTER=1
         echo "Selected Apps to Delete:"
+     
+
         for selected in $result
         do  
             if [ "$selected" = "true" ]; then  
