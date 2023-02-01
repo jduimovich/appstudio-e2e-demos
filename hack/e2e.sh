@@ -13,6 +13,12 @@ APPNAME=$(basename $DEMODIR)
 source $SCRIPTDIR/select-ns.sh $APPNAME 
 echo "Installing AppName: $APPNAME into namespace: $NS"  
 
+if [ "$AGGRESSIVE_PRUNE_PIPELINES" == "true" ] 
+then 
+  echo "Due to PVC Limits, this demo driver agressively removes pipelines"
+  $SCRIPTDIR/prune-completed-pipelines.sh  
+fi
+
 MANIFESTS=$MANIFEST_DIR/$APPNAME
 rm -rf $MANIFESTS
 mkdir -p $MANIFESTS
@@ -32,8 +38,8 @@ then
       --docker-server="https://quay.io" \
       --docker-username=$MY_QUAY_USER \
       --docker-password=$MY_QUAY_TOKEN  2>/dev/null
-    oc secrets link pipeline $SECRET_NAME  
   fi
+  oc secrets link pipeline $SECRET_NAME  
 fi
 
 
@@ -112,6 +118,7 @@ do
     FULL_IMAGE=quay.io/$QUAY_USER/$COMP
     echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
     yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
+     yq '.metadata.annotations.skip-initial-checks="'$QUICK_PIPELINES'"' | \
         tee $MANIFESTS/$B.yaml | \
         kubectl apply -n $NS -f -
   else

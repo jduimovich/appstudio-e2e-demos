@@ -18,4 +18,6 @@ mkdir -p $CACHE_DIR
 # logs for all installs here
 LOG_DIR=$ROOT_DIR/output/logs
 mkdir -p $LOG_DIR
+
+QUICK_PIPELINES=true 
  

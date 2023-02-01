@@ -63,10 +63,18 @@ function showroutes() {
 function showallappstatus() {
     ALL_APPS=$(kubectl get  application.appstudio.redhat.com -o yaml -n $NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
     echo 
+    HAS_APPS=false
     for app in $ALL_APPS
     do   
+        HAS_APPS=true
         showappstatus $app $NS
-    done   
+    done  
+    if [ "$HAS_APPS" == "true" ]
+    then
+        showroutes $NS 
+    else  
+        printf "\nNo Applications found in $NS:\n\n" 
+    fi
 }
 
 function showResourceName() {
@@ -136,7 +144,7 @@ function showappstatus() {
 }
  
 function showcurrentcontext {
-    printf  "\nContext: %s NS: %s\n"  "$CURRENT_CONTEXT" "$NS" 
+    printf  "\nContext: %s NS: %s Quick-Build: %s\n"  "$CURRENT_CONTEXT" "$NS" "$QUICK_PIPELINES"
 } 
   
 # init and compute menu options
@@ -163,18 +171,21 @@ until [ "${SELECT^}" == "q" ]; do
     SELECTED_DEMOS=${result// /;}  
     if [ "$SELECT" = "i" ]; then 
         clear 
-        showcurrentcontext   
+        showcurrentcontext 
+        NO_APPS_INSTALLED_MSG="No Apps Selected to install"  
         let SCOUNTER=1
         for selected in $result
         do  
             if [ "$selected" = "true" ]; then
+                NO_APPS_INSTALLED_MSG=""
                 APPNAME=${DEMOS[$SCOUNTER]}
                 INSTALL_LOG="$LOG_DIR/$APPNAME.txt"
                 echo "Install log in: $INSTALL_LOG"
-                ./hack/e2e.sh $DEMO_DIR/$APPNAME | tee $INSTALL_LOG
+                ./hack/background.sh e2e.sh "$DEMO_DIR/$APPNAME" "$INSTALL_LOG"  
             fi
             let SCOUNTER++
-        done
+        done 
+        echo $NO_APPS_INSTALLED_MSG
         read -n1 -p "press key to continue: "  WAIT
     fi   
     #show all running, instead of selected ones
@@ -183,7 +194,6 @@ until [ "${SELECT^}" == "q" ]; do
         echo "Applications" 
         showcurrentcontext      
         showallappstatus 
-        showroutes $NS 
         read -n1 -p "press key to continue: "  WAIT
     fi 
     if [ "$SELECT" = "e" ]; then  
@@ -241,7 +251,13 @@ until [ "${SELECT^}" == "q" ]; do
         cat $FULLPAGE
         read -n1 -t 1 -p "$LOOPCOUNT: will continue looping, press q to stop ..."  WAIT 
         if [ "$WAIT" != "q" ]; then
-          echo "$WAIT refreshing ..."
+            if [ "$AGGRESSIVE_PRUNE_PIPELINES" == "true" ] 
+            then
+                echo 
+                echo "Due to PVC Limits, this demo driver agressively removes pipelines"
+                ./hack/prune-completed-pipelines.sh   
+            fi
+            echo "$WAIT refreshing ..." 
         fi
       done 
     fi 
@@ -262,9 +278,7 @@ until [ "${SELECT^}" == "q" ]; do
         clear 
         showcurrentcontext   
         let SCOUNTER=1
-        echo "Selected Apps to Delete:"
-     
-
+        echo "Selected Apps to Delete:" 
         for selected in $result
         do  
             if [ "$selected" = "true" ]; then  
