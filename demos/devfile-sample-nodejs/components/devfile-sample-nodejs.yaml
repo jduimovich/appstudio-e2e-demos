@@ -1,0 +1,13 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: devfile-sample-nodejs
+spec:
+  componentName: devfile-sample-nodejs
+  application: devfile-sample-nodejs
+  containerImage: quay.io/jduimovich0/devfile-sample-nodejs
+  targetPort: 8081
+  source:
+    git:
+      url: https://github.com/nodeshift-starters/devfile-sample 
+  

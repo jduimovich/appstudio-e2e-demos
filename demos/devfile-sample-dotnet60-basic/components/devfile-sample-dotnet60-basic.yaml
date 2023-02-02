@@ -1,0 +1,13 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: devfile-sample-dotnet60-basic
+spec:
+  componentName: devfile-sample-dotnet60-basic
+  application: devfile-sample-dotnet60-basic
+  containerImage: quay.io/jduimovich0/devfile-sample-dotnet60-basic
+  targetPort: 8081
+  source:
+    git:
+      url: https://github.com/devfile-samples/devfile-sample-dotnet60-basic
+  
