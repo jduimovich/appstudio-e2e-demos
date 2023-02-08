@@ -9,7 +9,7 @@ fi
 ENVNAME=$2    
 if [ -z "$ENVNAME" ]
 then
-      ENVNAME="dev" 
+      ENVNAME="Development" 
 fi
 
 kubectl get Environment $ENVNAME -n $NS &> /dev/null
