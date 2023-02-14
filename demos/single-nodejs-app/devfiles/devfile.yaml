@@ -14,10 +14,7 @@ components:
       dockerfile:
         uri: docker/Dockerfile
         buildContext: .
-        rootRequired: false
-  - name: outerloop-deploy
-    kubernetes:
-      uri: deployment.yaml
+        rootRequired: false 
 commands:
   - id: build-image
     apply:
