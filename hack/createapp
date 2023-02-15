@@ -1,0 +1,44 @@
+
+REPO=$1
+if [[ -z $REPO ]]; then
+    echo Usage $0  repository url devfile"
+fi
+
+DEVFILE=$2
+if [[ -z $DEVFILE ]]; then
+    echo "Usage $0  repository url devfile"
+fi
+
+APP_NAME=$(basename $REPO)
+APP_NAME="${APP_NAME%.*}" 
+
+echo "Creating $APP_NAAME from $REPO "
+TEMP=$(mktemp)
+cat <<APP_EOF > $TEMP
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+    name: $APP_NAME
+spec:
+    description: "$APP_NAME built via CLI"
+    displayName: $APP_NAME
+APP_EOF
+cat "$TEMP"
+cat "$TEMP" | oc apply -f -
+
+cat <<COMP_EOF > $TEMP
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+    name: $APP_NAME
+spec:
+    componentName: $APP_NAME
+    application: $APP_NAME
+    containerImage: $APP_NAME
+    source:
+    git:
+        url: $REPO
+        devfileUrl: $DEVFILE
+COMP_EOF
+cat "$TEMP"
+cat "$TEMP" | oc apply -f -
