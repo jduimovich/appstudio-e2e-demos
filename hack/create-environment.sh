@@ -25,7 +25,7 @@ cat << EOF > $ENVFILE
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Environment
 metadata: 
-  name: $ENVNAME
+  name: ${ENVNAME,}
   namespace: "$NS"   
 spec:
   deploymentStrategy: AppStudioAutomated
