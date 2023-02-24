@@ -17,12 +17,12 @@ if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then
                         oc project $NS
                 fi
         fi
-        AGGRESSIVE_PRUNE_PIPELINES=true
+        AGGRESSIVE_PRUNE_PIPELINES=false
 else 
         #echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"
         NS=$(oc project --short)  
         USE_REDHAT_QUAY=true  
-        AGGRESSIVE_PRUNE_PIPELINES=true
+        AGGRESSIVE_PRUNE_PIPELINES=false
 fi
 
 if [ "$USE_REDHAT_QUAY" == "false" ]; then 
