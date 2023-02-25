@@ -32,7 +32,7 @@ WAIT_COUNTER=1
 while :
 do
     YAML=$(kubectl get ComponentDetectionQuery $CDQ_NAME -o yaml)
-    LEN=$(echo "$YAML" | yq '.status.conditions' | yq length)
+    LEN=$(echo "$YAML" | yq '.status.conditions' | yq length) 
     if [ $LEN != 0 ]
     then 
       let LEN--
@@ -42,13 +42,18 @@ do
           echo 
           DF=$( echo "$YAML" |  grep devfileFound | xargs)
           DFU=$( echo "$YAML" |  grep devfileUrl | xargs)
-          DOCKER=$( echo "$YAML" |  grep dockerfileUrl | xargs)
-          if [ "$DF$DFU$DOCKER" == "" ]; then
-            STATUS=$( echo "$YAML" |  yq ".status")
-            printf "CDQ: %s\nNOTHING FOUND: STATUS HERE %s\n\n" $REPO "$STATUS"
+          DOCKER=$( echo "$YAML" |  grep dockerfileUrl | xargs) 
+          if [ "$DF$DFU" != "" ]; then  
+            let SUCCESS++
+            printf "CDQ: %s\n\t%s\n\t%s\n\t%s\n" $REPO "$DF" "$DFU"  
+            break
           else
-            printf "CDQ: %s\n\t%s\n\t%s\n\n" $REPO "$DF" "$DFU"
-          fi 
+              if [ "$DOCKER" != "" ]; then   
+                printf "CDQ: %s\n\t%s\n" $REPO "$DOCKER"
+              else 
+                printf "CDQ: %s: No devfile or dockerfile found\n" "$REPO" 
+              fi 
+          fi   
           break
       fi 
     fi 
