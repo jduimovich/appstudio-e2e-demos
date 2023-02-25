@@ -6,7 +6,7 @@ spec:
   componentName: build-mongo-from-source
   application: build-mongo-from-source
   containerImage: quay.io/jduimovich0/build-mongo-from-source
-  targetPort: 8080
+  targetPort: 27017
   replicas: 1
   resources:
     requests:
