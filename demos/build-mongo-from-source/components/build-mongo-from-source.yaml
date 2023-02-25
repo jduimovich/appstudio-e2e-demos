@@ -14,6 +14,4 @@ spec:
       memory: 512Mi
   source:
     git:
-      url: https://github.com/jduimovich/build-mongo-from-source
-      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/build-mongo-from-source/devfiles/devfile.yaml
- 
+      url:   https://github.com/jduimovich/mongodb
