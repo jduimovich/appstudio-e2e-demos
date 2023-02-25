@@ -4,5 +4,5 @@ metadata:
   name: single-nodejs-app
 spec:
   description: "Demo of Node.js App, no dev or dockerfile"
-  # displayName: "Node.js App - single container"
-  displayName: "single-nodejs-app"
+  displayName: "Node.js App - single container"
+  # displayName: "single-nodejs-app"
