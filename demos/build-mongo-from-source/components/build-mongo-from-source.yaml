@@ -1,0 +1,19 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: build-mongo-from-source
+spec:
+  componentName: build-mongo-from-source
+  application: build-mongo-from-source
+  containerImage: quay.io/jduimovich0/build-mongo-from-source
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  source:
+    git:
+      url: https://github.com/jduimovich/build-mongo-from-source
+      devfileUrl: https://raw.githubusercontent.com/jduimovich/appstudio-e2e-demos/main/demos/build-mongo-from-source/devfiles/devfile.yaml
+ 
