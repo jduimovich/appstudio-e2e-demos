@@ -1,0 +1,7 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: mongo-pacman
+spec:
+  description: "mongo-pacman"
+  displayName: "mongo-pacman" 

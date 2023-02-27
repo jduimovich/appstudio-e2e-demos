@@ -1,11 +1,11 @@
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Component
 metadata:
-  name: build-mongo-from-source
+  name: mongodb
 spec:
-  componentName: build-mongo-from-source
-  application: build-mongo-from-source
-  containerImage: quay.io/jduimovich0/build-mongo-from-source
+  componentName: mongodb
+  application: mongo-pacman
+  containerImage: quay.io/jduimovich0/mongodb
   targetPort: 27017
   replicas: 1
   resources:
@@ -16,3 +16,5 @@ spec:
     git:
       url:   https://github.com/jduimovich/mongodb
       revision: updates
+
+
