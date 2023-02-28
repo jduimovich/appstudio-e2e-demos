@@ -8,7 +8,7 @@ spec:
   containerImage: quay.io/jduimovich0/burr-spring-sample
   source:
     git:
-      url: https://github.com/samburrai/java-springboot-hello
+      url: https://github.com/burrsutter/java-springboot-hello
       revision: main
       devfileUrl: https://raw.githubusercontent.com/devfile-samples/devfile-sample-java-springboot-basic/main/devfile.yaml
        
