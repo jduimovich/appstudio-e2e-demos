@@ -6,7 +6,7 @@ spec:
   componentName: mongodb
   application: mongo-pacman
   containerImage: quay.io/jduimovich0/mongodb
-  targetPort: 27017
+  targetPort: 8080
   replicas: 1
   resources:
     requests:
