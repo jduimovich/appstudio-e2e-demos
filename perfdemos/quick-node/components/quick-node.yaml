@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       cpu: 10m
-      memory: 512Mi
+      memory: 50Mi
   source:
     git:
       url: https://github.com/jduimovich/quick-node 
