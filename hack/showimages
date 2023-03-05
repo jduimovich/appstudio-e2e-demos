@@ -1,0 +1,23 @@
+
+
+
+function showImages ()  { 
+    echo
+    echo "Images in $1 log in $2"
+    kubectl get deployment -n $1 -o yaml | yq .items[].spec.template.spec.containers[0].image >>$2
+    cat $2 | sort | uniq
+}
+
+MHISTORY=$(mktemp)
+PHISTORY=$(mktemp)
+while true 
+do
+    clear 
+    echo $MHISTORY
+    echo $PHISTORY
+    showImages user1-tenant $MHISTORY
+    showImages jduimovich-tenant $PHISTORY
+    sleep 10
+done
+
+ 
