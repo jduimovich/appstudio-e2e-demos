@@ -5,16 +5,11 @@ metadata:
 spec:
   componentName: mongodb
   application: mongo-pacman
-  containerImage: quay.io/jduimovich0/mongodb
-  targetPort: 8080
-  replicas: 1
-  resources:
-    requests:
-      cpu: 10m
-      memory: 512Mi
+  containerImage: quay.io/jduimovich0/mongo-backend
+  targetPort: 27017
+  replicas: 1 
   source:
     git:
-      url:   https://github.com/jduimovich/mongodb
-      revision: hacks
-
-
+      url:   https://github.com/jduimovich/mongo-pacman
+      context: mongo
+ 

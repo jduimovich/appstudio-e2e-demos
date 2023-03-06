@@ -9,7 +9,7 @@ This has been tested on CRC infra-deployments, as well as Stone Soup Staging.
 
 Note: As per the infra-deployments examples, you need to set `MY_QUAY_USER` and `MY_QUAY_TOKEN` to enable push images to your personal registry.
 
-<img width="953" alt="image" src="menu.jpg">
+<img width="953" alt="image" src="graphics.jpg">
  
 Demos can be added in the subdirectory called demos in a structure like the following.
 

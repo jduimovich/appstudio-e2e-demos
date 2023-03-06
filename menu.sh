@@ -60,6 +60,9 @@ function showroutes() {
         
 } 
 
+function showdeployments() { 
+    ./hack/showdeployments.sh $1
+}
 function showallappstatus() {
     ALL_APPS=$(kubectl get  application.appstudio.redhat.com -o yaml -n $NS | yq '.items[].metadata.name' | xargs -n1 echo -n " " )
     echo 
@@ -71,6 +74,7 @@ function showallappstatus() {
     done  
     if [ "$HAS_APPS" == "true" ]
     then
+        showdeployments $NS 
         showroutes $NS 
     else  
         printf "\nNo Applications found in $NS:\n\n" 
@@ -87,9 +91,13 @@ function showResourceName() {
         fi
         printf "\n%s: %s\n" "$RES" "$ALLRS"
         printf  "Use CLI for more info: %s\n"  "kubectl get $RES $NAME -o yaml"
+} 
+
+function showappstatus() {  
+    ./hack/showappstatus.sh $1 $2
 }
- 
-function showappstatus() {
+
+function showappstatusx() {
     app=$1 
     NS=$2 
     printf "\nApplication: $app\n"    
@@ -118,29 +126,28 @@ function showappstatus() {
             REPO=$(echo "$COMPONENT" | yq  ".spec.source.git.url" -)
             IMG=$(echo "$COMPONENT" | yq '.spec.containerImage' -) 
             printf "\tComponent: %s\n\t\tGit: %s\n\t\tImage: %s\n" $COMPONENT_NAME  $REPO $IMG  
-            
-            RES=$(kubectl get GitOpsDeployment -l "appstudio.application.name=$app" -o yaml) 
-            NM=$(echo "$RES" | yq  ".items[0].metadata.name" -) 
-            REPO=$(echo "$RES" | yq  ".items[0].spec.source.repoURL" -)
-            HEALTH=$(echo "$RES" | yq  '.items[0].status.health.status' -)
-            DEST=$(echo "$RES" | yq  ".items[0].status.reconciledState.destination.namespace" -)  
-
-            printf "\nGitOpsDeployment: %s\n\tGit: %s\n" $NM  $REPO   
-            printf "\tHealth: %s Destination: %s\n" "$HEALTH" "$DEST"
-            printf  "\tUse CLI for more info: %s \n"  "kubectl get GitOpsDeployment -l \"appstudio.application.name=$app\" -o yaml"
-
-            RES=$(kubectl get snapshots -l  "appstudio.openshift.io/component=$COMPONENT_NAME" -o yaml) 
-            NM=$(echo "$RES" | yq  ".items[0].metadata.name" -)  
-            printf "\nSnapshots: %s\n" $NM  
-            printf  "Use CLI for more info: %s \n"  "kubectl get snapshots -l  "appstudio.openshift.io/component=$COMPONENT_NAME" -o yaml"
-    
-            RES=$(kubectl get SnapshotEnvironmentBinding -l  "appstudio.application=$app" -o yaml) 
-            NM=$(echo "$RES" | yq  ".items[0].metadata.name" -)  
-            ENVIRONMENT=$(echo "$RES" | yq  ".items[0].spec.environment" -)  
-            printf "\nSnapshotEnvironmentBinding: %s Environment: %s\n" $NM  $ENVIRONMENT
-            printf  "Use CLI for more info: %s \n"  "kubectl get SnapshotEnvironmentBinding -l  "appstudio.application=$app" -o yaml"
+           
         fi  
     done  
+    
+ 
+    RES=$(kubectl get  GitOpsDeployment -o yaml) 
+    NM=$(echo "$RES" | yq  ".items[].metadata.name" -) 
+    REPO=$(echo "$RES" | yq  ".items[].spec.source.repoURL" -)
+    HEALTH=$(echo "$RES" | yq  '.items[].status.health.status' -)
+    DEST=$(echo "$RES" | yq  ".items[].status.reconciledState.destination.namespace" -)  
+
+    printf "\nGitOpsDeployment: %s\n\tGit: %s\n" $NM  $REPO   
+    printf "\tHealth: %s Destination: %s\n" "$HEALTH" "$DEST" 
+
+    RES=$(kubectl get snapshots  -o yaml) 
+    NM=$(echo "$RES" | yq  ".items[].metadata.name" -)  
+    printf "\nSnapshots: %s\n" $NM   
+
+    RES=$(kubectl get SnapshotEnvironmentBinding  -o yaml) 
+    NM=$(echo "$RES" | yq  ".items[].metadata.name" -)  
+    ENVIRONMENT=$(echo "$RES" | yq  ".items[].spec.environment" -)  
+    printf "\nSnapshotEnvironmentBinding: %s Environment: %s\n" $NM  $ENVIRONMENT 
 }
  
 function showcurrentcontext {
@@ -153,7 +160,7 @@ updateserverinfo
 ./hack/create-environment.sh $NS Development
 
 BANNER=banner 
-MENU_TEXT=menu.txt  
+MENU_TEXT=text-menu.txt  
 ALL_CONTEXTS=$(kubectl  config get-contexts -o name | xargs -n 1 echo -n ";" | tr -d " ")
 ALL_CONTEXTS="${ALL_CONTEXTS:1}"  
 
