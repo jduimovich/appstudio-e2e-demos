@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: service-registry
 spec:
-  description: "service-registry built in App Studio"
-  # displayName: "Service Registry build-only example"
+  description: "service-registry built in App Studio" 
   displayName: "service-registry"

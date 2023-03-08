@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: devfile-sample-code-with-quarkus
 spec:
-  description: "The devfile sample for quarkus"
-  # displayName: "Devfile sample for quarkus"
+  description: "The devfile sample for quarkus" 
   displayName: "devfile-sample-code-with-quarkus"

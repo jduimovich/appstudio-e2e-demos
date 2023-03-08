@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: devfile-sample-java-springboot-basic
 spec:
-  description: "The devfile sample for springboot"
-  # displayName: "Devfile sample for springboot"
+  description: "The devfile sample for springboot" 
   displayName: "devfile-sample-java-springboot-basic"

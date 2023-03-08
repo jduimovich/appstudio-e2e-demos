@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: fast-build
 spec:
-  description: "dockerfile with zero build from ubi minimal"
-  # displayName: "UBI Minimal noop dockerfile"
+  description: "dockerfile with zero build from ubi minimal" 
   displayName: "fast-build"

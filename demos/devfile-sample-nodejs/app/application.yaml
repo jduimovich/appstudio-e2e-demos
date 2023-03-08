@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: devfile-sample-nodejs
 spec:
-  description: "The devfile sample for nodejs"
-  # displayName: "Devfile sample for nodejs"
+  description: "The devfile sample for nodejs"  
   displayName: "devfile-sample-nodejs"

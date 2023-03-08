@@ -1,0 +1,14 @@
+
+cat << EOF > spi.yaml
+apiVersion: appstudio.redhat.com/v1beta1
+kind: SPIAccessCheck
+metadata: 
+  name: hacdev-check-mongo-pacman
+  namespace: user1-tenant  
+spec:
+  repoUrl: https://github.com/jduimovich/mongo-pacman
+EOF
+kubectl delete SPIAccessCheck hacdev-check-mongo-pacman 
+kubectl apply -f spi.yaml 
+sleep 2
+kubectl get SPIAccessCheck hacdev-check-mongo-pacman -o yaml

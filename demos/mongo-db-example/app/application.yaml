@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: mongo-db-example 
 spec:
-  description: "mongo-db-example built in App Studio"
-  # displayName: "Mongo DB Example with Client and DB"
+  description: "mongo-db-example built in App Studio" 
   displayName: "mongo-db-example"

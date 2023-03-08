@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: devfile-sample-dotnet60-basic
 spec:
-  description: "The devfile sample for dotnet60"
-  # displayName: "Devfile sample for dotnet60"
+  description: "The devfile sample for dotnet60" 
   displayName: "devfile-sample-dotnet60-basic"

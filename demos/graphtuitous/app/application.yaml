@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: graphtuitous 
 spec:
-  description: "graphtuitous built in App Studio"
-  displayName: "graphtuitous® - Multi-Component Demo"
-  # displayName: "graphtuitous"
+  description: "graphtuitous built in App Studio" 
+  displayName: "graphtuitous-graphics-demo"

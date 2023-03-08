@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: kcp 
 spec:
-  description: "KCP - Build Only Demo"
-  # displayName: "KCP - Build Only Demo"
+  description: "KCP - Build Only Demo" 
   displayName: "kcp"

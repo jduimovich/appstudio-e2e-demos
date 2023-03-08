@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: quick-node
 spec:
-  description: "A pre-built app which is just used unmodified in docker"
-  # displayName: "quick-node Node.js App - single container"
+  description: "A pre-built app which is just used unmodified in docker" 
   displayName: "quick-node"

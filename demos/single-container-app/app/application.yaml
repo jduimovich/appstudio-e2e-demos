@@ -4,4 +4,4 @@ metadata:
   name: single-container-app
 spec:
   description: "Demo of App with Dockerfile"
-  displayName: "App with Dockerfile - single container" 
+  displayName: "single-container-app" 

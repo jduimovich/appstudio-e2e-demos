@@ -3,6 +3,5 @@ kind: Application
 metadata:
   name: hacbs-probe-payload 
 spec:
-  description: "hacbs-probe-payload built in App Studio"
-  # displayName: "IntegrationTestScenario "
+  description: "hacbs-probe-payload built in App Studio" 
   displayName: "hacbs-probe-payload"
