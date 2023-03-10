@@ -26,7 +26,7 @@ function showappstatus() {
     printf " "  
 
     COMPONENTS=$(kubectl get components -n $NS -o yaml) 
-    LEN=$(echo "$COMPONENTS" |  yq length)  
+    LEN=$(echo "$COMPONENTS" |  yq .items | yq length)  
     let LEN--   
     for COMPONENT_INDEX in  $(eval echo {0..$LEN})
     do

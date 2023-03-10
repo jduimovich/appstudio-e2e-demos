@@ -95,60 +95,7 @@ function showResourceName() {
 
 function showappstatus() {  
     ./hack/showappstatus.sh $1 $2
-}
-
-function showappstatusx() {
-    app=$1 
-    NS=$2 
-    printf "\nApplication: $app\n"    
-    GOPS=$(kubectl get application $app -n $NS -o yaml  2>/dev/null | 
-                yq '.status.devfile' |
-                yq '.metadata.attributes' |
-                grep gitOpsRepository.url | 
-                cut -d ' ' -f 2)       
-    printf "\tGitops Repo: %s\n" "$GOPS"
-    printf " "  
-
-    COMPONENTS=$(kubectl get components -n $NS -o yaml) 
-    LEN=$(echo "$COMPONENTS" | yq ".items[].metadata.name" | wc -l)  
-    LEN=32
-    for COMPONENT_INDEX in  $(eval echo {0..$LEN})
-    do
-        COMPONENT=$(echo "$COMPONENTS" | yq  ".items[$COMPONENT_INDEX]" -)  
-        if [ "$COMPONENT" == "null" ] 
-        then
-            break
-        fi
-        APPNAME=$(echo "$COMPONENT" | yq  ".spec.application" -) 
-        if [ $APPNAME == "$app" ] 
-        then
-            COMPONENT_NAME=$(echo "$COMPONENT" | yq  ".metadata.name" -) 
-            REPO=$(echo "$COMPONENT" | yq  ".spec.source.git.url" -)
-            IMG=$(echo "$COMPONENT" | yq '.spec.containerImage' -) 
-            printf "\tComponent: %s\n\t\tGit: %s\n\t\tImage: %s\n" $COMPONENT_NAME  $REPO $IMG  
-           
-        fi  
-    done  
-    
- 
-    RES=$(kubectl get  GitOpsDeployment -o yaml) 
-    NM=$(echo "$RES" | yq  ".items[].metadata.name" -) 
-    REPO=$(echo "$RES" | yq  ".items[].spec.source.repoURL" -)
-    HEALTH=$(echo "$RES" | yq  '.items[].status.health.status' -)
-    DEST=$(echo "$RES" | yq  ".items[].status.reconciledState.destination.namespace" -)  
-
-    printf "\nGitOpsDeployment: %s\n\tGit: %s\n" $NM  $REPO   
-    printf "\tHealth: %s Destination: %s\n" "$HEALTH" "$DEST" 
-
-    RES=$(kubectl get snapshots  -o yaml) 
-    NM=$(echo "$RES" | yq  ".items[].metadata.name" -)  
-    printf "\nSnapshots: %s\n" $NM   
-
-    RES=$(kubectl get SnapshotEnvironmentBinding  -o yaml) 
-    NM=$(echo "$RES" | yq  ".items[].metadata.name" -)  
-    ENVIRONMENT=$(echo "$RES" | yq  ".items[].spec.environment" -)  
-    printf "\nSnapshotEnvironmentBinding: %s Environment: %s\n" $NM  $ENVIRONMENT 
-}
+} 
  
 function showcurrentcontext {
     printf  "\nContext: %s NS: %s Quick-Build: %s\n"  "$CURRENT_CONTEXT" "$NS" "$QUICK_PIPELINES"
@@ -306,7 +253,22 @@ until [ "${SELECT^}" == "q" ]; do
           done
           read -n1 -p "press key to continue: "  WAIT
         fi
-      fi      
+      fi    
+      if [ "$SELECT" == "b" ] || [ "$SELECT" == "B" ]; then 
+        clear 
+        showcurrentcontext    
+        let SCOUNTER=1 
+        for selected in $result
+        do  
+            if [ "$selected" == "true" ] || [ "$SELECT" == "B" ]; then  
+               ./hack/rebuild-app.sh  ${DEMOS[$SCOUNTER]}  $NS
+            else 
+                echo Skip  ${DEMOS[$SCOUNTER]} 
+            fi
+            let SCOUNTER++
+        done 
+        read -n1 -p "press key to continue: "  WAIT
+      fi   
 
 done 
 
