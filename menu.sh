@@ -233,10 +233,8 @@ until [ "${SELECT^}" == "q" ]; do
         bash ./hack/install-rebuilder  
         echo 
         read -n1 -p "Press any key to continue ..."  WAIT
-    fi 
-
-
-      if [ "$SELECT" = "z" ]; then 
+    fi  
+    if [ "$SELECT" = "z" ]; then 
         clear 
         showcurrentcontext   
         let SCOUNTER=1
@@ -251,32 +249,31 @@ until [ "${SELECT^}" == "q" ]; do
         read -n1 -p "Deleting above Applications!!! PRESS y, other key to skip: "  WAIT
         echo
         if [ "$WAIT" = "y" ]; then
-          let SCOUNTER=1
-          for selected in $result
-          do  
-              if [ "$selected" = "true" ]; then  
-                  kubectl delete application ${DEMOS[$SCOUNTER]} -n $NS
-              fi
-              let SCOUNTER++
-          done
-          read -n1 -p "press key to continue: "  WAIT
+            let SCOUNTER=1
+            for selected in $result
+            do  
+                if [ "$selected" = "true" ]; then  
+                    kubectl delete application ${DEMOS[$SCOUNTER]} -n $NS
+                fi
+                let SCOUNTER++
+            done
+            read -n1 -p "press key to continue: "  WAIT
         fi
-      fi    
-      if [ "$SELECT" == "b" ] || [ "$SELECT" == "B" ]; then 
+    fi    
+    if [ "$SELECT" == "b" ] || [ "$SELECT" == "B" ]; then 
         clear 
         showcurrentcontext    
         let SCOUNTER=1 
         for selected in $result
         do  
             if [ "$selected" == "true" ] || [ "$SELECT" == "B" ]; then  
-               ./hack/rebuild-app.sh  ${DEMOS[$SCOUNTER]}  $NS
+                ./hack/rebuild-app.sh  ${DEMOS[$SCOUNTER]}  $NS
             else 
                 echo Skip  ${DEMOS[$SCOUNTER]} 
             fi
             let SCOUNTER++
         done 
         read -n1 -p "press key to continue: "  WAIT
-      fi   
-
+    fi   
 done 
 
