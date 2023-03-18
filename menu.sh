@@ -227,6 +227,14 @@ until [ "${SELECT^}" == "q" ]; do
         fi  
         read -n1 -p "Press any key to continue ..."  WAIT
     fi 
+    if [ "$SELECT" = "A" ]; then
+        clear   
+        printf  "\n\nInstalling Auto-builder"  
+        bash ./hack/install-rebuilder  
+        echo 
+        read -n1 -p "Press any key to continue ..."  WAIT
+    fi 
+
 
       if [ "$SELECT" = "z" ]; then 
         clear 

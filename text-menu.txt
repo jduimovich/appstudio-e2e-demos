@@ -2,5 +2,5 @@
 
  i (install selected) f (forward page of demos)
  s (status all apps), p (pipelines), r (routes) 
- (b/B build selected/all)
+ (b/B build selected/all) (A - install-autobuilder)
  x (delete pipelines) z(delete selected apps)
