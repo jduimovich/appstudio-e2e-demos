@@ -6,8 +6,8 @@ do
     if [ -z $RT ]; then
         echo "rebuilder route not ready" 
     else  
-        echo "$RT is  ready" 
-        echo "curl -k https://$RT/authorize?id=$(oc whoami --show-token)" 
+        echo "$RT is ready"  
+        echo "Configuring token for access."  
         curl -k https://$RT/authorize?id=$(oc whoami --show-token)
         exit
     fi
