@@ -1,0 +1,18 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: auto-rebuild
+spec:
+  componentName: auto-rebuild
+  application: auto-rebuild
+  containerImage: quay.io/jduimovich0/rebuilder
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+  source:
+    git:
+      url: https://github.com/jduimovich/rebuilder
+ 

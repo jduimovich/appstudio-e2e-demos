@@ -1,0 +1,7 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: auto-rebuild
+spec:
+  description: "Utility to auto-rebuild apps in your namespace if git repo changes"
+  displayName: "auto-rebuild" 
