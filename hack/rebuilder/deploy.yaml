@@ -13,7 +13,7 @@ spec:
         app.kubernetes.io/instance: rebuilder
     spec:
       containers:
-        - image: quay.io/jduimovich0/rebuilder:2023-03-18-125411
+        - image: quay.io/jduimovich0/rebuilder:2023-03-20-164726
           imagePullPolicy: Always
           livenessProbe:
             httpGet:

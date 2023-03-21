@@ -230,10 +230,18 @@ until [ "${SELECT^}" == "q" ]; do
     if [ "$SELECT" = "A" ]; then
         clear   
         printf  "\n\nInstalling Auto-builder"  
-        bash ./hack/install-rebuilder  
+        bash ./hack/rebuilder/install-rebuilder  
         echo 
         read -n1 -p "Press any key to continue ..."  WAIT
     fi  
+    if [ "$SELECT" = "D" ]; then
+        clear   
+        printf  "\n\nDelete Auto-builder"  
+        bash ./hack/rebuilder/delete-rebuilder  
+        echo 
+        read -n1 -p "Press any key to continue ..."  WAIT
+    fi
+
     if [ "$SELECT" = "z" ]; then 
         clear 
         showcurrentcontext   
