@@ -5,9 +5,9 @@ metadata:
 spec:
   componentName: turbine
   application: turbine
-  containerImage: quay.io/jduimovich0/turbine
-  targetPort: 8080
+  containerImage: quay.io/jduimovich0/turbine  
   replicas: 1 
   source:
     git:
       url: https://github.com/jduimovich/quinoa-wind-turbine
+      revision: standalone
