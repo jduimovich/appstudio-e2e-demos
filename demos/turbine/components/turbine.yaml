@@ -1,0 +1,17 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Component
+metadata:
+  name: turbine
+spec:
+  componentName: turbine
+  application: turbine
+  containerImage: quay.io/jduimovich0/turbine
+  targetPort: 8080
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  source:
+    git:
+      url: https://github.com/jduimovich/quinoa-wind-turbine
