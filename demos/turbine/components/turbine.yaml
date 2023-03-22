@@ -7,11 +7,7 @@ spec:
   application: turbine
   containerImage: quay.io/jduimovich0/turbine
   targetPort: 8080
-  replicas: 1
-  resources:
-    requests:
-      cpu: 10m
-      memory: 512Mi
+  replicas: 1 
   source:
     git:
       url: https://github.com/jduimovich/quinoa-wind-turbine
