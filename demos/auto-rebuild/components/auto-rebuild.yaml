@@ -3,6 +3,7 @@ kind: Component
 metadata:
   name: auto-rebuild
 spec:
+  # the name auto-build is chosen not to conflict with the binary only install "rebuilder"
   componentName: auto-rebuild
   application: auto-rebuild
   containerImage: quay.io/jduimovich0/rebuilder
