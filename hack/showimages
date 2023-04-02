@@ -8,15 +8,17 @@ function showImages ()  {
     cat $2 | sort | uniq
 }
 
-MHISTORY=$(mktemp)
-PHISTORY=$(mktemp)
+PROJECT=$(oc project --short) 
+if [[ $PROJECT == *"-tenant"* ]]; then
+  echo "Tenant $PROJECT found"
+fi 
+ 
+HISTORY=$(mktemp) 
 while true 
 do
-    clear 
-    echo $MHISTORY
-    echo $PHISTORY
-    showImages user1-tenant $MHISTORY
-    showImages jduimovich-tenant $PHISTORY
+    clear   
+    echo "Images History for $PROJECT"
+    showImages $PROJECT $HISTORY 
     sleep 10
 done
 

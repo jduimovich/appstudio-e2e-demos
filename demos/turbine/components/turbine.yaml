@@ -10,4 +10,4 @@ spec:
   source:
     git:
       url: https://github.com/jduimovich/quinoa-wind-turbine
-      revision: standalone
+      revision: add-https
