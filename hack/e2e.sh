@@ -139,22 +139,6 @@ then
 else
     echo "No IntegrationTestScenarios found for $APPNAME."
 fi
-
-# if [ -d "$DEMODIR/add-ons" ]
-# then
-#     echo "Add-ons exist with content."
-#     echo "Install Add-ons (hack)."  
-#       # Extra stuff not provided by gitops/app studio
-#       # App Studio needs a concept of user "add-ons" via gitops/infrastructure components
-#       # Yaml only, not code
-#       format=$(<$SCRIPTDIR/templates/add-ons.yaml) 
-#       NM="$APPNAME-addon"
-#       RPATH=demos/$APPNAME/add-ons
-#       REPO_URL=$(git config --get remote.origin.url)
-#       printf "$format\n"  $NM $NS $RPATH $REPO_URL | kubectl apply -f -   
-# else
-#     echo "No Add-ons found for $APPNAME."
-# fi
   
 echo 
 echo "Find the yaml used here: $MANIFESTS/"
