@@ -1,7 +1,0 @@
-apiVersion: appstudio.redhat.com/v1beta1
-kind: SPIAccessCheck
-metadata: 
-  name: hacdev-check-mongo-pacman
-  namespace: user1-tenant  
-spec:
-  repoUrl: https://github.com/jduimovich/mongo-pacman

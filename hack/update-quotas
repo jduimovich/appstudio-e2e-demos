@@ -1,9 +1,0 @@
-
-
-oc patch ResourceQuota/storage --type merge -p '{"spec":{"hard":{"count/persistentvolumeclaims": "100" }}}'
- 
-oc patch clusterresourcequota/for-user1-routes --type merge -p  \
-  '{"spec":{"quota":{"hard":{"count/ingresses.extensions": "32" }}}}'
-oc patch clusterresourcequota/for-user1-routes --type merge -p  \
-  '{"spec":{"quota":{"hard":{"count/routes.route.openshift.io": "32" }}}}'
- 

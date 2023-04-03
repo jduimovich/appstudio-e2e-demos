@@ -1,14 +1,20 @@
 
-cat << EOF > spi.yaml
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+SPI=$(mktemp)
+source $SCRIPTDIR/select-ns.sh default   
+cat << EOF > $SPI
 apiVersion: appstudio.redhat.com/v1beta1
 kind: SPIAccessCheck
 metadata: 
   name: hacdev-check-mongo-pacman
-  namespace: user1-tenant  
+  namespace: $NS
 spec:
   repoUrl: https://github.com/jduimovich/mongo-pacman
 EOF
 kubectl delete SPIAccessCheck hacdev-check-mongo-pacman 
-kubectl apply -f spi.yaml 
+kubectl apply -f $SPI
+rm $SPI
 sleep 2
 kubectl get SPIAccessCheck hacdev-check-mongo-pacman -o yaml
