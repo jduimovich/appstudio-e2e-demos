@@ -100,7 +100,24 @@ function showappstatus() {
 function showcurrentcontext {
     printf  "\nContext: %s NS: %s Quick-Build: %s\n"  "$CURRENT_CONTEXT" "$NS" "$QUICK_PIPELINES"
 } 
-  
+
+function wait-for-keypress {
+    read -n1 -p "press key to continue: "  WAIT
+}
+function selected_list { 
+    SL=""
+    let slc=1 
+    for selected in $* 
+    do  
+        if [ "$selected" == "true" ]; then   
+            SL="$SL ${DEMOS[$slc]}"  
+        fi
+        let slc++
+    done 
+    echo "$SL"
+}
+
+
 # init and compute menu options
 initDemoList
 updateserverinfo    
@@ -127,20 +144,15 @@ until [ "${SELECT^}" == "q" ]; do
         clear 
         showcurrentcontext 
         NO_APPS_INSTALLED_MSG="No Apps Selected to install"  
-        let SCOUNTER=1
-        for selected in $result
-        do  
-            if [ "$selected" = "true" ]; then
-                NO_APPS_INSTALLED_MSG=""
-                APPNAME=${DEMOS[$SCOUNTER]}
-                INSTALL_LOG="$LOG_DIR/$APPNAME.txt"
-                echo "Install log in: $INSTALL_LOG"
-                ./hack/background.sh e2e.sh "$DEMO_DIR/$APPNAME" "$INSTALL_LOG"  
-            fi
-            let SCOUNTER++
-        done 
+        for selected in $(selected_list "$result") 
+        do   
+            NO_APPS_INSTALLED_MSG="" 
+            INSTALL_LOG="$LOG_DIR/$selected.txt"
+            echo "Install log in: $INSTALL_LOG"
+            ./hack/background.sh e2e.sh "$DEMO_DIR/$selected" "$INSTALL_LOG"  
+        done  
         echo $NO_APPS_INSTALLED_MSG
-        read -n1 -p "press key to continue: "  WAIT
+        wait-for-keypress
     fi   
     #show all running, instead of selected ones
     if [ "$SELECT" = "s" ]; then  
@@ -148,13 +160,13 @@ until [ "${SELECT^}" == "q" ]; do
         echo "Applications" 
         showcurrentcontext      
         showallappstatus 
-        read -n1 -p "press key to continue: "  WAIT
+        wait-for-keypress
     fi 
     if [ "$SELECT" = "e" ]; then  
         clear 
         echo "Environments" 
         showResourceName Environments       
-        read -n1 -p "press key to continue: "  WAIT
+        wait-for-keypress
     fi
     if [ "$SELECT" = "f" ]; then  
         clear 
@@ -164,7 +176,7 @@ until [ "${SELECT^}" == "q" ]; do
     if [ "$SELECT" = "r" ]; then  
         clear  
         showroutes $NS 
-        read -n1 -p "press key to continue: "  WAIT
+        wait-for-keypress
     fi 
     if [ "$SELECT" = "q" ]; then  
         clear 
@@ -185,9 +197,9 @@ until [ "${SELECT^}" == "q" ]; do
             echo "No context selected"   
         else
             echo  
-            kubectl config  use-context $result
+            kubectl config use-context $result
             updateserverinfo
-            read -n1 -p "press key to continue: "  WAIT
+            wait-for-keypress
         fi 
     fi   
     if [ "$SELECT" = "p" ]; then
@@ -244,44 +256,44 @@ until [ "${SELECT^}" == "q" ]; do
 
     if [ "$SELECT" = "z" ]; then 
         clear 
-        showcurrentcontext   
-        let SCOUNTER=1
+        showcurrentcontext    
         echo "Selected Apps to Delete:" 
-        for selected in $result
-        do  
-            if [ "$selected" = "true" ]; then  
-                echo ${DEMOS[$SCOUNTER]} 
-            fi
-            let SCOUNTER++
+        for selected in $(selected_list "$result") 
+        do   
+            echo $selected
         done
         read -n1 -p "Deleting above Applications!!! PRESS y, other key to skip: "  WAIT
         echo
         if [ "$WAIT" = "y" ]; then
-            let SCOUNTER=1
-            for selected in $result
+            for selected in $(selected_list "$result") 
             do  
-                if [ "$selected" = "true" ]; then  
-                    kubectl delete application ${DEMOS[$SCOUNTER]} -n $NS
-                fi
-                let SCOUNTER++
+                kubectl delete application $selected -n $NS 
             done
-            read -n1 -p "press key to continue: "  WAIT
+            wait-for-keypress
         fi
+    fi
+    if [ "$SELECT" == "S" ]; then 
+        clear    
+        for selected in $(selected_list "$result")
+        do   
+            echo "SELECTED  $selected"  
+        done   
+        wait-for-keypress
+    fi  
+    if [ "$SELECT" == "B" ]; then 
+        clear 
+        showcurrentcontext
+        ./hack/rebuild-all.sh $NS     
+        wait-for-keypress
     fi    
-    if [ "$SELECT" == "b" ] || [ "$SELECT" == "B" ]; then 
+    if [ "$SELECT" == "b" ]; then 
         clear 
         showcurrentcontext    
-        let SCOUNTER=1 
-        for selected in $result
-        do  
-            if [ "$selected" == "true" ] || [ "$SELECT" == "B" ]; then  
-                ./hack/rebuild-app.sh  ${DEMOS[$SCOUNTER]}  $NS
-            else 
-                echo Skip  ${DEMOS[$SCOUNTER]} 
-            fi
-            let SCOUNTER++
+        for selected in $(selected_list "$result") 
+        do   
+            ./hack/rebuild-app.sh  $selected $NS  
         done 
-        read -n1 -p "press key to continue: "  WAIT
+        wait-for-keypress
     fi   
 done 
 
