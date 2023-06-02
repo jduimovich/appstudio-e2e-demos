@@ -39,7 +39,7 @@ then
       --docker-username=$MY_QUAY_USER \
       --docker-password=$MY_QUAY_TOKEN  2>/dev/null
   fi
-  oc secrets link pipeline $SECRET_NAME  
+  oc secrets link appstudio-pipeline $SECRET_NAME  
 fi
 
 

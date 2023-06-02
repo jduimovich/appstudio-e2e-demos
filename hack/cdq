@@ -5,6 +5,7 @@ then
       echo Missing REPO  
       exit -1 
 fi
+VERBOSE=$2
  
 #echo "CDQ: $REPO" 
 
@@ -35,7 +36,11 @@ do
     LEN=$(echo "$YAML" | yq '.status.conditions' | yq length) 
     if [ $LEN != 0 ]
     then 
-      let LEN--
+      let LEN-- 
+      if [ "$VERBOSE" = "true" ]
+      then
+            echo "$YAML" 
+      fi
       STATUS=$(echo "$YAML" | yq ".status.conditions[$LEN].type")  
       if [ "$STATUS" == "Completed" ]
       then
