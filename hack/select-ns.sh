@@ -4,8 +4,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export CURRENT_CONTEXT=$(kubectl config current-context)  
 if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then  
         #echo "Running private version of App Studio using personal user for Quay"  
-        NS=user1-tenant
-        USE_REDHAT_QUAY=false 
+        NS=user1-tenant 
         kubectl get ns $NS &> /dev/null
         ERR=$? 
         if [  "$ERR" != "0" ]
@@ -18,22 +17,17 @@ if [ "$(oc auth can-i '*' '*' --all-namespaces)" == "yes" ]; then
                 fi
         fi
         AGGRESSIVE_PRUNE_PIPELINES=false
-else 
-        #echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"
-        NS=$(oc project --short)  
-        USE_REDHAT_QUAY=true  
-        AGGRESSIVE_PRUNE_PIPELINES=false
-fi
-
-if [ "$USE_REDHAT_QUAY" == "false" ]; then 
         if [ -z "$MY_QUAY_USER" ]
         then
-                echo Missing env MY_QUAY_USER
-                exit -1 
+                echo Warning: missing env MY_QUAY_USER 
         fi
         if [ -z "$MY_QUAY_TOKEN" ]
         then
-                echo Missing env MY_QUAY_USER 
-                exit -1 
+                echo Warning: missing env MY_QUAY_TOKEN   
         fi
-fi 
+else 
+        #echo  "Assume AppStudio/Stonesoup managed mode and using RH Quay"
+        NS=$(oc project --short)   
+        AGGRESSIVE_PRUNE_PIPELINES=false
+fi
+ 

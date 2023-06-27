@@ -4,8 +4,7 @@ metadata:
   name: actions-to-appstudio
 spec:
   componentName: actions-to-appstudio
-  application: actions-to-appstudio
-  containerImage: ghcr.io/jduimovich/actions-to-appstudio:latest
+  application: actions-to-appstudio 
   targetPort: 8080
   replicas: 1
   resources:

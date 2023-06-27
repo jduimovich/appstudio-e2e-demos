@@ -4,8 +4,7 @@ metadata:
   name: turbine
 spec:
   componentName: turbine
-  application: turbine
-  containerImage: quay.io/jduimovich0/turbine  
+  application: turbine 
   replicas: 1 
   source:
     git:

@@ -4,8 +4,7 @@ metadata:
   name: mongo-frontend
 spec:
   componentName: mongo-frontend
-  application: mongo-db-example 
-  containerImage: quay.io/jduimovich0/mongo-db-example 
+  application: mongo-db-example  
   targetPort: 8080
   replicas: 1
   resources:

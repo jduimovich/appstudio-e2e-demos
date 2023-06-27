@@ -4,8 +4,7 @@ metadata:
   name: single-container-app
 spec:
   componentName: single-container-app
-  application: single-container-app
-  containerImage: quay.io/jduimovich0/single-container-app
+  application: single-container-app 
   targetPort: 8080
   replicas: 1
   resources:

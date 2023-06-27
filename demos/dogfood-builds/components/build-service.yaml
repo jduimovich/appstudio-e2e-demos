@@ -4,8 +4,7 @@ metadata:
   name: build-service
 spec:
   componentName: build-service
-  application: dogfood-builds
-  containerImage: quay.io/jduimovich0/build-service 
+  application: dogfood-builds 
   skipGitOpsResourceGeneration: true
   source:
     git:

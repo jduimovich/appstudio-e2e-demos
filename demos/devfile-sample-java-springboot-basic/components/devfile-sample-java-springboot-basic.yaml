@@ -4,8 +4,7 @@ metadata:
   name: devfile-sample-java-springboot-basic
 spec:
   componentName: devfile-sample-java-springboot-basic
-  application: devfile-sample-java-springboot-basic
-  containerImage: quay.io/jduimovich0/devfile-sample-java-springboot-basic
+  application: devfile-sample-java-springboot-basic 
   targetPort: 8081
   source:
     git:

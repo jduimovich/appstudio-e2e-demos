@@ -4,8 +4,7 @@ metadata:
   name: devfile-sample-code-with-quarkus
 spec:
   componentName: devfile-sample-code-with-quarkus
-  application: devfile-sample-code-with-quarkus
-  containerImage: quay.io/jduimovich0/devfile-sample-code-with-quarkus
+  application: devfile-sample-code-with-quarkus 
   targetPort: 8081
   source:
     git:

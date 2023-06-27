@@ -4,8 +4,7 @@ metadata:
   name: frontend
 spec:
   componentName: frontend
-  application: graphtuitous
-  containerImage: quay.io/jduimovich0/frontend
+  application: graphtuitous 
   targetPort: 8080
   replicas: 1
   resources:

@@ -4,8 +4,7 @@ metadata:
   name: devfile-sample-python-basic
 spec:
   componentName: devfile-sample-python-basic
-  application: devfile-sample-python-basic
-  containerImage: quay.io/jduimovich0/devfile-sample-python-basic
+  application: devfile-sample-python-basic 
   targetPort: 8081
   source:
     git:

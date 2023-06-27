@@ -4,8 +4,7 @@ metadata:
   name: managed-gitops
 spec:
   componentName: managed-gitops
-  application: dogfood-builds
-  containerImage: quay.io/jduimovich0/managed-gitops
+  application: dogfood-builds 
   skipGitOpsResourceGeneration: true
   source:
     git:

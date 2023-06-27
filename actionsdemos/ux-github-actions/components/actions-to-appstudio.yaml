@@ -4,8 +4,7 @@ metadata:
   name:  ux-github-actions
 spec:
   componentName:  ux-github-actions
-  application:  ux-github-actions
-  containerImage: ghcr.io/jduimovich/ux-github-actions:latest
+  application:  ux-github-actions 
   targetPort: 8080
   replicas: 1
   resources:

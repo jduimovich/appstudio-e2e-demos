@@ -4,8 +4,7 @@ metadata:
   name: docker-shell-test
 spec:
   componentName: docker-shell-test
-  application: docker-shell-test
-  containerImage: quay.io/jduimovich0/docker-shell-test 
+  application: docker-shell-test 
   skipGitOpsResourceGeneration: true 
   source:
     git:

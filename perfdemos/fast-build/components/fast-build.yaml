@@ -4,8 +4,7 @@ metadata:
   name: fast-build
 spec:
   componentName: fast-build
-  application: fast-build
-  containerImage: quay.io/jduimovich0/fast-build 
+  application: fast-build 
   skipGitOpsResourceGeneration: true 
   source:
     git:

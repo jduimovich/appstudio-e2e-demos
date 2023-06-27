@@ -4,8 +4,7 @@ metadata:
   name: kcp
 spec:
   componentName: kcp
-  application: kcp
-  containerImage: quay.io/jduimovich0/kcp
+  application: kcp 
   source:
     git:
       url: https://github.com/kcp-dev/kcp

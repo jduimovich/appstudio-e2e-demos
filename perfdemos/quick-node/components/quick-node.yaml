@@ -4,8 +4,7 @@ metadata:
   name: quick-node
 spec:
   componentName: quick-node
-  application: quick-node
-  containerImage: quay.io/jduimovich0/quick-node 
+  application: quick-node 
   targetPort: 8080
   replicas: 1
   resources:

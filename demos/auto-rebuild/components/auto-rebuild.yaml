@@ -5,8 +5,7 @@ metadata:
 spec:
   # the name auto-build is chosen not to conflict with the binary only install "rebuilder"
   componentName: auto-rebuild
-  application: auto-rebuild
-  containerImage: quay.io/jduimovich0/rebuilder
+  application: auto-rebuild 
   targetPort: 8080
   replicas: 1
   resources:

@@ -4,8 +4,7 @@ metadata:
   name: hacbs-probe-payload
 spec:
   componentName: hacbs-probe-payload
-  application: hacbs-probe-payload
-  containerImage: quay.io/rbean/hacbs-probe-payload
+  application: hacbs-probe-payload 
   targetPort: 8081
   source:
     git:

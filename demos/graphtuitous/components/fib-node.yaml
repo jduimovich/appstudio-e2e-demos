@@ -4,8 +4,7 @@ metadata:
   name: fib-node
 spec:
   componentName: fib-node
-  application: graphtuitous 
-  containerImage: quay.io/jduimovich0/fib-node 
+  application: graphtuitous   
   targetPort: 8080
   replicas: 1
   resources:

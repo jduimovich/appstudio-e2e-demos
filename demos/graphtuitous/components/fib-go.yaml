@@ -4,8 +4,7 @@ metadata:
   name: fib-go
 spec:
   componentName: fib-go
-  application: graphtuitous
-  containerImage: quay.io/jduimovich0/fib-go 
+  application: graphtuitous 
   targetPort: 8080
   replicas: 1
   resources:

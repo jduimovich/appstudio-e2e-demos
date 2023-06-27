@@ -4,8 +4,7 @@ metadata:
   name: service-provider-integration-oauth
 spec:
   componentName: service-provider-integration-oauth
-  application: dogfood-builds
-  containerImage: quay.io/jduimovich0/service-provider-integration-oauth
+  application: dogfood-builds 
   skipGitOpsResourceGeneration: true
   source:
     git:

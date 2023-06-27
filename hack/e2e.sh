@@ -11,6 +11,7 @@ fi
 
 APPNAME=$(basename $DEMODIR)    
 source $SCRIPTDIR/select-ns.sh $APPNAME 
+echo
 echo "Installing AppName: $APPNAME into namespace: $NS"  
 
 if [ "$AGGRESSIVE_PRUNE_PIPELINES" == "true" ] 
@@ -22,27 +23,7 @@ fi
 MANIFESTS=$MANIFEST_DIR/$APPNAME
 rm -rf $MANIFESTS
 mkdir -p $MANIFESTS
-echo "Manifests can be found in: $MANIFESTS" 
-
-SECRET_NAME=redhat-appstudio-staginguser-pull-secret
-if [ "$USE_REDHAT_QUAY" != "true" ] 
-then 
-  kubectl get secret $SECRET_NAME -n $NS &> /dev/null
-  ERR=$? 
-  if [  "$ERR" == "0" ]
-  then
-    echo "Secret docker-registry $SECRET_NAME already exists"
-  else
-    echo "Install Secret for user $MY_QUAY_USER in Quay.io" 
-    kubectl create secret -n $NS docker-registry $SECRET_NAME \
-      --docker-server="https://quay.io" \
-      --docker-username=$MY_QUAY_USER \
-      --docker-password=$MY_QUAY_TOKEN  2>/dev/null
-  fi
-  oc secrets link appstudio-pipeline $SECRET_NAME  
-fi
-
-
+ 
 if [ -d "$DEMODIR/app" ] 
 then
   echo "App Definition Found, use $DEMODIR/app." 
@@ -52,43 +33,33 @@ else
   $SCRIPTDIR/create-app.sh $APPNAME $NS
 fi 
 while ! kubectl get Application $APPNAME -n $NS &> /dev/null ; do 
-  sleep 1
-done 
-echo -n "Waiting for Application: $APPNAME to be ready."
-MAX_WAIT=5
-WAIT_COUNTER=1
+  sleep 0.5
+done  
+MAX_WAIT=4
+WAIT_COUNTER=0
 while :
 do
     STATUS=$(kubectl get application  $APPNAME -n $NS -o yaml | yq '.status.conditions[0].status') 
     if [ "$STATUS" == "True" ]
-    then 
-        echo
+    then  
         break
     fi
     let WAIT_COUNTER++
     if [ "$WAIT_COUNTER" == "$MAX_WAIT" ]
     then 
-        echo "WAIT LOOP TIMEOUT - continuing ... "
+        echo "Waiting for Application: $APPNAME to be ready  - TIMEOUT - continuing ... "
         break
     fi
     echo -n .
-    sleep 1
+    sleep 0.5
 done 
- 
-echo "Install Components. "   
+
+NEEDS_SECRET="false" 
 for component in $DEMODIR/components/*
-do
-   IMG=$(yq '.spec.containerImage' $component)
-   B=$(basename $IMG)
-# app studio format quay.io/redhat-appstudio/user-workload:NAMESPACE-COMPONENT 
-# cluster format quay.io/$MY_QUAY_USER/COMPONENT
-  if [ "$USE_REDHAT_QUAY" == "true" ] 
-  then 
-    QUAY_USER=redhat-appstudio
-    COMP=user-workload:$NS-$B 
-  else
-    QUAY_USER=$MY_QUAY_USER
-    COMP=$B 
+do 
+  CONTAINER_IMAGE=$(yq '.spec.containerImage' $component)  
+  if [ "$CONTAINER_IMAGE" != "null" ]; then 
+    NEEDS_SECRET="true"
   fi
   DEVFILEURL=$(yq '.spec.source.git.devfileUrl' $component)
   if [  "$DEVFILEURL" != "null" ]
@@ -108,40 +79,50 @@ do
       fi
     else 
       echo "Devfile reference unmodified $DEVFILEURL"
-    fi
-  else
-    echo "No devfile in this repo for this component"
+    fi 
   fi 
+  CNAME=$(yq '.metadata.name' $component)
   SRCURL=$(yq '.spec.source.git.url' $component)
   if [  "$SRCURL" != "null" ]
-  then
-    FULL_IMAGE=quay.io/$QUAY_USER/$COMP
-    echo "Setting Component Image using MY_QUAY_USER to $FULL_IMAGE"
-    yq '.spec.containerImage="'$FULL_IMAGE'"' $component | \
+  then 
+     yq '.metadata.annotations."image.redhat.com/generate"="'true'"' $component | \
      yq '.metadata.annotations.skip-initial-checks="'$QUICK_PIPELINES'"' | \
-        tee $MANIFESTS/$B.yaml | \
+        tee $MANIFESTS/$CNAME.yaml | \
         kubectl apply -n $NS -f -
-  else
-      IMAGE=$(yq '.spec.containerImage' $component)
-      echo "Binary only Component,  reference image unmodified $IMAGE"
+  else 
+      echo "Binary only Component, specified image is $CONTAINER_IMAGE"
       cat $component |  
-        tee $MANIFESTS/$B.yaml | \
+        tee $MANIFESTS/$CNAME.yaml | \
         kubectl apply -n $NS -f -
   fi
 done
+
+#If any components had a containerImage specified, then you need a secret
+# user specifies an image, it must be for MY_QUAY_USER MY_QUAY_TOKEN accounts
+if [ "$NEEDS_SECRET" == "true" ] 
+then 
+  SECRET_NAME=redhat-appstudio-staginguser-pull-secret
+  kubectl get secret $SECRET_NAME -n $NS &> /dev/null
+  ERR=$? 
+  if [  "$ERR" == "0" ]
+  then
+    echo "Secret docker-registry $SECRET_NAME already exists"
+  else
+    echo "Install Secret for user $MY_QUAY_USER in Quay.io" 
+    kubectl create secret -n $NS docker-registry $SECRET_NAME \
+      --docker-server="https://quay.io" \
+      --docker-username=$MY_QUAY_USER \
+      --docker-password=$MY_QUAY_TOKEN  2>/dev/null
+  fi
+  oc secrets link appstudio-pipeline $SECRET_NAME  
+fi
 
 if [ -d "$DEMODIR/scenarios" ]
 then
     echo "IntegrationTestScenarios exist with content."
     echo "Install IntegrationTestScenarios."
     kubectl apply -n $NS -f $DEMODIR/scenarios
-    cp $DEMODIR/scenarios/*  $MANIFESTS/
-else
-    echo "No IntegrationTestScenarios found for $APPNAME."
+    cp $DEMODIR/scenarios/*  $MANIFESTS/ 
 fi
-  
-echo 
-echo "Find the yaml used here: $MANIFESTS/"
-ls -al $MANIFESTS/
-echo "done"
-echo
+   
+echo "Manifests: $MANIFESTS"  

@@ -30,11 +30,11 @@ cat <<COMP_EOF > $TEMP
 apiVersion: appstudio.redhat.com/v1alpha1
 kind: Component
 metadata:
+    image.redhat.com/generate: "true"
     name: $APP_NAME
 spec:
     componentName: $APP_NAME
-    application: $APP_NAME
-    containerImage: $APP_NAME
+    application: $APP_NAME 
     source:
     git:
         url: $REPO

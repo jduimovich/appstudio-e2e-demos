@@ -147,8 +147,7 @@ until [ "${SELECT^}" == "q" ]; do
         for selected in $(selected_list "$result") 
         do   
             NO_APPS_INSTALLED_MSG="" 
-            INSTALL_LOG="$LOG_DIR/$selected.txt"
-            echo "Install log in: $INSTALL_LOG"
+            INSTALL_LOG="$LOG_DIR/$selected.txt" 
             ./hack/background.sh e2e.sh "$DEMO_DIR/$selected" "$INSTALL_LOG"  
         done  
         echo $NO_APPS_INSTALLED_MSG
@@ -275,9 +274,11 @@ until [ "${SELECT^}" == "q" ]; do
     if [ "$SELECT" == "S" ]; then 
         clear    
         for selected in $(selected_list "$result")
-        do   
-            echo "SELECTED  $selected"  
+        do    
+            showappstatus $selected $NS
         done   
+        showdeployments $NS 
+        showroutes $NS 
         wait-for-keypress
     fi  
     if [ "$SELECT" == "B" ]; then 

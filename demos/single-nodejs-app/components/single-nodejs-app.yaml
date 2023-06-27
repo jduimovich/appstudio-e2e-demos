@@ -4,8 +4,7 @@ metadata:
   name: single-nodejs-app
 spec:
   componentName: single-nodejs-app
-  application: single-nodejs-app
-  containerImage: quay.io/jduimovich0/single-nodejs-app 
+  application: single-nodejs-app 
   targetPort: 8080
   replicas: 1
   resources:

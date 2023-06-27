@@ -4,8 +4,7 @@ metadata:
   name: mongodb
 spec:
   componentName: mongodb
-  application: mongo-pacman
-  containerImage: quay.io/jduimovich0/mongo-backend
+  application: mongo-pacman 
   targetPort: 27017
   replicas: 1 
   source:
