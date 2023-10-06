@@ -11,7 +11,7 @@ metadata:
 components:
   - name: image-build
     image:
-      imageName: my-image:latest
+      imageName: find-docker:latest
       dockerfile:
         uri: /dockerfiles/Dockerfile
         buildContext: .
