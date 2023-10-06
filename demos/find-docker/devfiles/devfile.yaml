@@ -1,0 +1,21 @@
+schemaVersion: 2.2.0
+metadata:
+  name: find-docker
+  projectType: container
+  language: container
+  attributes:
+    alpha.dockerimage-port: 8080
+  version: 1.0.0
+  provider: Red Hat  
+components:
+  - name: outerloop-build
+    image:
+      imageName: find-docker
+      dockerfile:
+        uri: /dockerfiles/Dockerfile
+        buildContext: .
+        rootRequired: false 
+commands:
+  - id: build-image
+    apply:
+      component: outerloop-build

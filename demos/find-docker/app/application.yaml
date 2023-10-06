@@ -1,0 +1,7 @@
+apiVersion: appstudio.redhat.com/v1alpha1
+kind: Application
+metadata:
+  name: find-docker
+spec:
+  description: "Demo of random location of dockerfile"
+  displayName: "find-docker" 
