@@ -1,21 +1,48 @@
 schemaVersion: 2.2.0
 metadata:
-  name: find-docker
-  projectType: container
-  language: container
-  attributes:
-    alpha.dockerimage-port: 8080
-  version: 1.0.0
-  provider: Red Hat  
+  name: container
+  version: 1.2.1
+  provider: Red Hat 
+  website: https://redhat.com
+  displayName: Container Example
+  description: Container Example 
+  projectType: nodejs
+  language: javascript 
 components:
-  - name: outerloop-build
+  - name: image-build
     image:
-      imageName: find-docker
+      imageName: my-image:latest
       dockerfile:
         uri: /dockerfiles/Dockerfile
         buildContext: .
-        rootRequired: false 
+        rootRequired: false
+  - name: kubernetes-deploy
+    attributes:
+      deployment/replicas: 1
+      deployment/cpuRequest: 10m
+      deployment/memoryRequest: 100Mi
+      deployment/container-port: 8080
+    kubernetes:
+      uri: deploy.yaml
+      endpoints:
+        - name: http-8080
+          targetPort: 8080
+          path: /
+          protocol: https
+          secure: true
+          exposure: public
 commands:
   - id: build-image
     apply:
-      component: outerloop-build
+      component: image-build
+  - id: deployk8s
+    apply:
+      component: kubernetes-deploy
+  - id: deploy
+    composite:
+      commands:
+        - build-image
+        - deployk8s
+      group:
+        kind: deploy
+        isDefault: true
